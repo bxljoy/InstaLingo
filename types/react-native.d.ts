@@ -10,5 +10,11 @@ declare module "react-native" {
   interface ImageProps {
     className?: string;
   }
+  interface ButtonProps {
+    className?: string;
+  }
+  interface TouchableOpacityProps {
+    className?: string;
+  }
   // Add more components as needed.
 }
