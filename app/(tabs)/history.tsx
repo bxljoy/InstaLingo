@@ -4,7 +4,7 @@ import { SafeAreaView, RefreshControl, FlatList } from "react-native";
 import { getExtractedTexts } from "@/lib/db";
 import { ExtractedText } from "@/types/definitions";
 
-export default function TabTwoScreen() {
+export default function HistoryScreen() {
   const [extractedTexts, setExtractedTexts] = useState<ExtractedText[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -20,7 +20,9 @@ export default function TabTwoScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await loadExtractedTexts();
-    setRefreshing(false);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 500);
   }, [loadExtractedTexts]);
 
   useEffect(() => {
