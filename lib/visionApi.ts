@@ -1,11 +1,26 @@
+import * as SecureStore from "expo-secure-store";
+import { API_KEY as INITIAL_API_KEY } from "../config";
+
 const CLOUD_FUNCTION_URL =
   "https://us-central1-instalingo-434320.cloudfunctions.net/visionApiProxy";
+const API_KEY_STORAGE_KEY = "vision_api_key";
+
+async function getApiKey(): Promise<string> {
+  let apiKey = await SecureStore.getItemAsync(API_KEY_STORAGE_KEY);
+  if (!apiKey) {
+    // If the API key isn't in secure storage, use the initial key and store it
+    apiKey = INITIAL_API_KEY;
+    await SecureStore.setItemAsync(API_KEY_STORAGE_KEY, apiKey);
+  }
+  return apiKey;
+}
 
 export const analyzeImage = async (
   imageUri: string
 ): Promise<string | null> => {
   try {
-    // console.log(imageUri);
+    const apiKey = await getApiKey();
+
     const base64Image = await getBase64FromUri(imageUri);
     const body = JSON.stringify({
       image: base64Image.split(",")[1],
@@ -15,7 +30,10 @@ export const analyzeImage = async (
     const response = await fetch(CLOUD_FUNCTION_URL, {
       method: "POST",
       body,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": apiKey,
+      },
     });
 
     if (!response.ok) {
