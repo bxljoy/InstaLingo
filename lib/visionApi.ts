@@ -1,4 +1,5 @@
-const API_KEY = "AIzaSyC14Pfp0jAxQFPaT40dIYIe9rpMxqi5TKc";
+const CLOUD_FUNCTION_URL =
+  "https://us-central1-instalingo-434320.cloudfunctions.net/visionApiProxy";
 
 export const analyzeImage = async (
   imageUri: string
@@ -7,28 +8,32 @@ export const analyzeImage = async (
     // console.log(imageUri);
     const base64Image = await getBase64FromUri(imageUri);
     const body = JSON.stringify({
-      requests: [
-        {
-          image: { content: base64Image.split(",")[1] },
-          features: [{ type: "TEXT_DETECTION" }],
-        },
-      ],
+      image: base64Image.split(",")[1],
+      features: [{ type: "TEXT_DETECTION" }],
     });
 
-    const response = await fetch(
-      `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`,
-      { method: "POST", body, headers: { "Content-Type": "application/json" } }
-    );
+    const response = await fetch(CLOUD_FUNCTION_URL, {
+      method: "POST",
+      body,
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(
+        "Server responded with an error:",
+        response.status,
+        errorText
+      );
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
     const result = await response.json();
     // console.log(result);
-    const detections = result.responses[0].textAnnotations;
+    const detections = result.text;
 
     if (detections) {
-      //   console.log("Text:");
-      //   detections.forEach((text: any) => console.log(text.description));
-      console.log(detections[0].description);
-      return detections[0].description;
+      return detections;
     } else {
       console.log("No text detected");
       return "No text detected";
