@@ -3,6 +3,10 @@ import { GOOGLE_TRANSLATE_API_KEY as INITIAL_API_KEY } from "../config";
 
 const GOOGLE_TRANSLATE_URL =
   "https://europe-central2-instalingo-434320.cloudfunctions.net/googleTranslate";
+
+// const GOOGLE_TRANSLATE_URL =
+//   "https://googletranslate-495756842233.europe-central2.run.app";
+
 const API_KEY_STORAGE_KEY = "google_translate_api_key";
 
 async function getApiKey(): Promise<string> {

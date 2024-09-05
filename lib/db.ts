@@ -4,15 +4,24 @@ import { ExtractedText } from "@/types/definitions";
 const db = SQLite.openDatabaseSync("extractedTexts.db");
 
 export const initDatabase = async () => {
-  //   console.log("initDatabase");
   await db.execAsync(
     "CREATE TABLE IF NOT EXISTS extracted_texts (id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);"
   );
 };
 
-export const saveExtractedText = async (text: string) => {
-  //   console.log("saveExtractedText");
+export const clearDatabase = async () => {
+  await db.execAsync("DROP TABLE IF EXISTS extracted_texts");
+};
 
+export const clearExtractedTexts = async () => {
+  await db.execAsync("DELETE FROM extracted_texts");
+};
+
+export const deleteExtractedText = async (id: number) => {
+  await db.execAsync(`DELETE FROM extracted_texts WHERE id = ${id}`);
+};
+
+export const saveExtractedText = async (text: string) => {
   const result = await db.runAsync(
     "INSERT INTO extracted_texts (text, timestamp) VALUES (?, CURRENT_TIMESTAMP)",
     text
