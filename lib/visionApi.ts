@@ -1,5 +1,5 @@
 import * as SecureStore from "expo-secure-store";
-import { API_KEY as INITIAL_API_KEY } from "../config";
+import { VISION_API_KEY as INITIAL_API_KEY } from "../config";
 
 const CLOUD_FUNCTION_URL =
   "https://europe-central2-instalingo-434320.cloudfunctions.net/visionApiProxy";
