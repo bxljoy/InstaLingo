@@ -2,7 +2,7 @@ import * as SecureStore from "expo-secure-store";
 import { API_KEY as INITIAL_API_KEY } from "../config";
 
 const CLOUD_FUNCTION_URL =
-  "https://us-central1-instalingo-434320.cloudfunctions.net/visionApiProxy";
+  "https://europe-central2-instalingo-434320.cloudfunctions.net/visionApiProxy";
 const API_KEY_STORAGE_KEY = "vision_api_key";
 
 async function getApiKey(): Promise<string> {
