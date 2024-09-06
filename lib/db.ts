@@ -31,7 +31,7 @@ export const saveExtractedText = async (text: string) => {
 };
 
 export const getExtractedTexts = (): Promise<ExtractedText[]> => {
-  console.log("getExtractedTexts");
+  //   console.log("getExtractedTexts");
   return new Promise((resolve, reject) => {
     db.withTransactionAsync(async () => {
       try {
