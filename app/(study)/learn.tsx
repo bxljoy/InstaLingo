@@ -53,8 +53,6 @@ export default function LearnScreen() {
   const copyToClipboard = async () => {
     if (extractedText) {
       await Clipboard.setStringAsync(extractedText as string);
-      setBannerVisible(true);
-      setTimeout(() => setBannerVisible(false), 2000);
     }
   };
 

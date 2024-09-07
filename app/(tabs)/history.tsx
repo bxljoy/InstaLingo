@@ -51,7 +51,7 @@ export default function HistoryScreen() {
 
   useEffect(() => {
     loadExtractedTexts();
-  }, [loadExtractedTexts]);
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 items-center">
