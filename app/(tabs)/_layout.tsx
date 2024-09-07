@@ -1,10 +1,26 @@
-import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import React, { useState, useEffect } from "react";
+import { Pressable, useColorScheme as _useColorScheme } from "react-native";
 import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+
+// Custom hook for theme management
+function useColorScheme() {
+  const systemColorScheme = _useColorScheme();
+  const [colorScheme, setColorScheme] = useState(systemColorScheme);
+
+  useEffect(() => {
+    setColorScheme(systemColorScheme);
+  }, [systemColorScheme]);
+
+  const toggleColorScheme = () => {
+    setColorScheme((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
+  return { colorScheme, toggleColorScheme };
+}
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -15,7 +31,8 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme, toggleColorScheme } = useColorScheme();
+
   return (
     <Tabs
       screenOptions={{
@@ -26,6 +43,10 @@ export default function TabLayout() {
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
+        headerStyle: {
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+        },
+        headerTintColor: Colors[colorScheme ?? "light"].text,
       }}
     >
       <Tabs.Screen
@@ -33,6 +54,23 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          headerLeft: () => (
+            <Pressable
+              onPress={toggleColorScheme}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+                marginLeft: 15,
+              })}
+            >
+              <MaterialCommunityIcons
+                name={
+                  colorScheme === "dark" ? "weather-sunny" : "weather-night"
+                }
+                size={25}
+                color={Colors[colorScheme ?? "light"].text}
+              />
+            </Pressable>
+          ),
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable>

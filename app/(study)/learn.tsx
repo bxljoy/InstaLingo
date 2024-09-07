@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { useColorScheme } from "@/components/useColorScheme";
 import { useLocalSearchParams } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import { initDatabase, saveExtractedText } from "@/lib/db";
 import { translateText } from "@/lib/googleTranslate";
-import { Picker } from "@react-native-picker/picker";
+import RNPickerSelect from "react-native-picker-select";
+import { MaterialIcons } from "@expo/vector-icons";
 
 // Add supported languages
 const LANGUAGES = [
@@ -14,12 +14,30 @@ const LANGUAGES = [
   { code: "fr", name: "French" },
   { code: "de", name: "German" },
   { code: "it", name: "Italian" },
+  { code: "ja", name: "Japanese" },
+  { code: "zh-CN", name: "Chinese (Simplified)" },
+  { code: "zh-TW", name: "Chinese (Traditional)" },
+  { code: "ru", name: "Russian" },
+  { code: "pt", name: "Portuguese" },
+  { code: "ar", name: "Arabic" },
+  { code: "hi", name: "Hindi" },
+  { code: "bn", name: "Bengali" },
+  { code: "pa", name: "Punjabi" },
+  { code: "ur", name: "Urdu" },
+  { code: "vi", name: "Vietnamese" },
+  { code: "tr", name: "Turkish" },
+  { code: "id", name: "Indonesian" },
+  { code: "ms", name: "Malay" },
+  { code: "th", name: "Thai" },
+  { code: "ko", name: "Korean" },
+  { code: "nl", name: "Dutch" },
+  { code: "sv", name: "Swedish" },
+  { code: "no", name: "Norwegian" },
   // Add more languages as needed
 ];
 
 export default function LearnScreen() {
   const { extractedText } = useLocalSearchParams();
-  const colorScheme = useColorScheme();
 
   const [isSaving, setIsSaving] = useState(false);
   const [bannerVisible, setBannerVisible] = useState(false);
@@ -81,72 +99,94 @@ export default function LearnScreen() {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      className="bg-black bg-opacity-50"
-    >
-      <View className="flex-1 items-center">
-        <View className="bg-white rounded-t-3xl p-6">
-          <Text
-            className={`text-sm p-4 rounded-md ${
-              colorScheme === "dark"
-                ? "bg-slate-700 text-white"
-                : "bg-slate-300 text-black"
-            }`}
-          >
-            {extractedText}
-          </Text>
+    <ScrollView className="flex-1 bg-[#1B0112]">
+      <View className="bg-[#5A0834] rounded-t-3xl p-6 mt-6">
+        <Text className="text-[#E44EC3] text-lg font-bold mb-4">
+          Extracted Text:
+        </Text>
+        <Text className="text-white text-sm p-4 bg-[#9D0B51] rounded-md mb-6">
+          {extractedText}
+        </Text>
 
-          <Picker
-            selectedValue={targetLanguage}
-            onValueChange={(itemValue) => setTargetLanguage(itemValue)}
-            className="mt-4 mb-2"
-          >
-            {LANGUAGES.map((lang) => (
-              <Picker.Item
-                key={lang.code}
-                label={lang.name}
-                value={lang.code}
-              />
-            ))}
-          </Picker>
+        <View className="mb-4">
+          <RNPickerSelect
+            onValueChange={(value) => setTargetLanguage(value)}
+            items={LANGUAGES.map((lang) => ({
+              label: lang.name,
+              value: lang.code,
+              key: lang.code,
+            }))}
+            value={targetLanguage}
+            useNativeAndroidPickerStyle={false}
+            placeholder={{ label: "Select a language", value: null }}
+            style={{
+              inputIOS: {
+                fontSize: 16,
+                paddingVertical: 12,
+                paddingHorizontal: 10,
+                borderWidth: 1,
+                borderColor: "#E44EC3",
+                borderRadius: 8,
+                color: "#E44EC3",
+                paddingRight: 30,
+              },
+              inputAndroid: {
+                fontSize: 16,
+                paddingHorizontal: 10,
+                paddingVertical: 8,
+                borderWidth: 1,
+                borderColor: "#E44EC3",
+                borderRadius: 8,
+                color: "#E44EC3",
+                paddingRight: 30,
+              },
+            }}
+            Icon={() => {
+              return (
+                <MaterialIcons
+                  name="arrow-drop-down"
+                  size={48}
+                  color="#E44EC3"
+                />
+              );
+            }}
+          />
+        </View>
 
-          <TouchableOpacity
-            onPress={handleTranslate}
-            className="bg-green-500 p-2 rounded-md mb-4"
-          >
-            <Text className="text-white text-center">Translate</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleTranslate}
+          className="bg-[#9D0B51] p-4 rounded-full mb-6"
+        >
+          <Text className="text-white text-center font-bold">Translate</Text>
+        </TouchableOpacity>
 
-          {translatedText && (
-            <Text
-              className={`text-sm p-4 rounded-md mt-4 ${
-                colorScheme === "dark"
-                  ? "bg-slate-600 text-white"
-                  : "bg-slate-200 text-black"
-              }`}
-            >
+        {translatedText && (
+          <View className="mb-6">
+            <Text className="text-[#E44EC3] text-lg font-bold mb-2">
+              Translated Text:
+            </Text>
+            <Text className="text-white text-sm p-4 bg-[#9D0B51] rounded-md">
               {translatedText}
             </Text>
-          )}
-
-          <View className="flex flex-row justify-evenly w-full mt-4">
-            <TouchableOpacity
-              onPress={onCopy}
-              className="bg-blue-500 p-2 rounded-md"
-            >
-              <Text className="text-white">Copy</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={onSave}
-              disabled={isSaving}
-              className="bg-red-500 p-2 rounded-md"
-            >
-              <Text className="text-white">
-                {isSaving ? "Saving..." : "Save"}
-              </Text>
-            </TouchableOpacity>
           </View>
+        )}
+
+        <View className="flex-row justify-around">
+          <TouchableOpacity
+            onPress={onCopy}
+            className="bg-[#E44EC3] p-4 rounded-full flex-1 mr-2"
+          >
+            <Text className="text-white text-center font-bold">Copy</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={onSave}
+            disabled={isSaving}
+            className="bg-[#E44EC3] p-4 rounded-full flex-1 ml-2"
+          >
+            <Text className="text-white text-center font-bold">
+              {isSaving ? "Saving..." : "Save"}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
