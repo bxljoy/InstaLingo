@@ -74,42 +74,44 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 items-center">
-      <ScrollView>
-        <Text className="text-2xl font-bold mb-4 text-center">InstaLingo</Text>
-        <Text className="text-lg mb-4 text-center">
-          Convert your images to your learning material
+    <SafeAreaView className="flex-1 bg-[#1B0112]">
+      <ScrollView className="flex-1 px-5 py-6">
+        <Text className="text-3xl font-bold text-[#E44EC3] text-center mb-2">
+          InstaLingo
+        </Text>
+        <Text className="text-lg text-[#9D0B51] text-center mb-6">
+          Convert your images to learning material
         </Text>
         {image ? (
           <Image
             source={{ uri: image }}
-            className="mt-4 w-80 h-96 self-center mb-6"
+            className="w-80 h-80 rounded-2xl self-center mb-6"
           />
         ) : (
-          <View className="mt-4 w-80 h-96 self-center bg-gray-200 rounded-lg flex items-center justify-center mb-6">
-            <MaterialIcons name="image" size={48} color="gray" />
-            <Text className="mt-2 text-gray-500">No image selected</Text>
+          <View className="w-80 h-80 bg-[#5A0834] rounded-2xl justify-center items-center self-center mb-6">
+            <MaterialIcons name="image" size={48} color="#E44EC3" />
+            <Text className="text-[#E44EC3] mt-2">No image selected</Text>
           </View>
         )}
-        <View className="flex flex-row justify-evenly items-center w-full">
-          <TouchableOpacity onPress={takePicture} className="flex items-center">
-            <MaterialIcons name="camera-alt" size={48} color="coral" />
-            <Text className="mt-2">Camera</Text>
+        <View className="flex-row justify-around items-center w-full mt-6">
+          <TouchableOpacity onPress={takePicture} className="items-center">
+            <MaterialIcons name="camera-alt" size={48} color="#E44EC3" />
+            <Text className="text-[#E44EC3] mt-1">Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleExtractText}
             disabled={isExtracting || !image}
             className={`${
-              image ? "bg-red-500" : "bg-gray-500"
-            } rounded-full w-28 h-28 shadow-lg items-center justify-center`}
+              image ? "bg-[#9D0B51]" : "bg-[#5A0834]"
+            } rounded-full px-6 py-4 shadow-lg`}
           >
-            <Text className="text-white font-bold text-xl text-center">
+            <Text className="text-white font-bold text-lg text-center">
               {isExtracting ? "Extracting..." : "Extract Text"}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={pickImage} className="flex items-center">
-            <MaterialIcons name="photo" size={48} color="coral" />
-            <Text className="mt-2">Album</Text>
+          <TouchableOpacity onPress={pickImage} className="items-center">
+            <MaterialIcons name="photo" size={48} color="#E44EC3" />
+            <Text className="text-[#E44EC3] mt-1">Album</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
