@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Pressable, useColorScheme as _useColorScheme } from "react-native";
-import { Link, Tabs } from "expo-router";
+import { useColorScheme as _useColorScheme, Alert } from "react-native";
+import { Tabs } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from "react-native-popup-menu";
+import { clearDatabase, clearExtractedTexts } from "@/lib/db";
+import { MaterialIcons } from "@expo/vector-icons";
 
 // Custom hook for theme management
 function useColorScheme() {
@@ -22,7 +29,6 @@ function useColorScheme() {
   return { colorScheme, toggleColorScheme };
 }
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
   color: string;
@@ -32,6 +38,26 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const { colorScheme, toggleColorScheme } = useColorScheme();
+
+  const handleClearDatabase = async () => {
+    try {
+      await clearDatabase();
+      Alert.alert("Success", "Database cleared successfully");
+    } catch (error) {
+      console.error("Error clearing database:", error);
+      Alert.alert("Error", "Failed to clear database");
+    }
+  };
+
+  const handleClearHistory = async () => {
+    try {
+      await clearExtractedTexts();
+      Alert.alert("Success", "History cleared successfully");
+    } catch (error) {
+      console.error("Error clearing history:", error);
+      Alert.alert("Error", "Failed to clear history");
+    }
+  };
 
   return (
     <Tabs
@@ -54,36 +80,50 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-          headerLeft: () => (
-            <Pressable
-              onPress={toggleColorScheme}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-                marginLeft: 15,
-              })}
-            >
-              <MaterialCommunityIcons
-                name={
-                  colorScheme === "dark" ? "weather-sunny" : "weather-night"
-                }
-                size={25}
-                color={Colors[colorScheme ?? "light"].text}
-              />
-            </Pressable>
-          ),
           headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? "light"].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+            <Menu>
+              <MenuTrigger>
+                <MaterialIcons
+                  name="clear-all"
+                  size={25}
+                  color={Colors[colorScheme ?? "light"].text}
+                  style={{ marginRight: 15 }}
+                />
+              </MenuTrigger>
+              <MenuOptions
+                customStyles={{
+                  optionsContainer: {
+                    marginTop: 30,
+                    backgroundColor: Colors[colorScheme ?? "light"].background,
+                    borderRadius: 8,
+                    padding: 8,
+                  },
+                }}
+              >
+                <MenuOption
+                  onSelect={handleClearDatabase}
+                  text="Clear Database"
+                  customStyles={{
+                    optionText: {
+                      color: Colors[colorScheme ?? "light"].text,
+                      fontSize: 16,
+                      padding: 10,
+                    },
+                  }}
+                />
+                <MenuOption
+                  onSelect={handleClearHistory}
+                  text="Clear History"
+                  customStyles={{
+                    optionText: {
+                      color: Colors[colorScheme ?? "light"].text,
+                      fontSize: 16,
+                      padding: 10,
+                    },
+                  }}
+                />
+              </MenuOptions>
+            </Menu>
           ),
         }}
       />
