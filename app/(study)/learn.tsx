@@ -6,6 +6,7 @@ import { initDatabase, saveExtractedText } from "@/lib/db";
 import { translateText } from "@/lib/googleTranslate";
 import RNPickerSelect from "react-native-picker-select";
 import { MaterialIcons } from "@expo/vector-icons";
+import { TranslatedEntity } from "@/types/definitions";
 
 // Add supported languages
 const LANGUAGES = [
@@ -42,7 +43,8 @@ export default function LearnScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [bannerVisible, setBannerVisible] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState("en");
-  const [translatedText, setTranslatedText] = useState("");
+  const [translatedEntity, setTranslatedEntity] =
+    useState<TranslatedEntity | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -63,13 +65,13 @@ export default function LearnScreen() {
   };
 
   const handleSaveExtractedText = async () => {
-    if (extractedText) {
+    if (translatedEntity) {
       setIsSaving(true);
       try {
-        await saveExtractedText(extractedText as string);
-        console.log("Text saved successfully");
+        await saveExtractedText(translatedEntity);
+        console.log("translatedEntity saved successfully");
       } catch (error) {
-        console.error("Error saving text:", error);
+        console.error("Error saving translatedEntity:", error);
       } finally {
         setIsSaving(false);
       }
@@ -85,11 +87,12 @@ export default function LearnScreen() {
   const handleTranslate = async () => {
     if (extractedText) {
       try {
-        const translated = await translateText(
+        const translatedEntity = await translateText(
           extractedText as string,
           targetLanguage
         );
-        setTranslatedText(translated);
+        setTranslatedEntity(translatedEntity);
+        console.log("TranslatedEntity:", translatedEntity);
       } catch (error) {
         console.error("Error translating text:", error);
       }
@@ -158,13 +161,13 @@ export default function LearnScreen() {
           <Text className="text-white text-center font-bold">Translate</Text>
         </TouchableOpacity>
 
-        {translatedText && (
+        {translatedEntity && (
           <View className="mb-6">
             <Text className="text-[#E44EC3] text-lg font-bold mb-2">
               Translated Text:
             </Text>
             <Text className="text-white text-sm p-4 bg-[#9D0B51] rounded-md">
-              {translatedText}
+              {translatedEntity.translatedText}
             </Text>
           </View>
         )}

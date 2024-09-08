@@ -1,5 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 import { GOOGLE_TRANSLATE_API_KEY as INITIAL_API_KEY } from "../config";
+import { TranslatedEntity } from "../types/definitions";
 
 const GOOGLE_TRANSLATE_URL =
   "https://europe-central2-instalingo-434320.cloudfunctions.net/googleTranslate";
@@ -22,7 +23,7 @@ async function getApiKey(): Promise<string> {
 export async function translateText(
   text: string,
   targetLanguage: string
-): Promise<string> {
+): Promise<TranslatedEntity> {
   try {
     const apiKey = await getApiKey();
     const response = await fetch(GOOGLE_TRANSLATE_URL, {
@@ -39,7 +40,8 @@ export async function translateText(
     }
 
     const data = await response.json();
-    return data.translatedText;
+    console.log(data);
+    return data;
   } catch (error) {
     console.error("Error translating text:", error);
     throw error;
