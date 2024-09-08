@@ -30,8 +30,6 @@ export const saveExtractedText = async (translatedEntity: TranslatedEntity) => {
     translatedEntity.translatedText,
     translatedEntity.translatedLanguage
   );
-  console.log("result", result);
-  console.log(result.lastInsertRowId, result.changes);
 };
 
 export const getExtractedTexts = (): Promise<ExtractedText[]> => {
