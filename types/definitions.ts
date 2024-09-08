@@ -3,3 +3,10 @@ export interface ExtractedText {
   text: String;
   timestamp: Date;
 }
+
+export interface TranslatedEntity {
+  originalText: string;
+  originalLanguage: string;
+  translatedText: string;
+  translatedLanguage: string;
+}
