@@ -1,6 +1,5 @@
-export interface ExtractedText {
+export interface ExtractedText extends TranslatedEntity {
   id: number;
-  text: String;
   timestamp: Date;
 }
 

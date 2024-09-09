@@ -1,25 +1,22 @@
-import { useCallback, useState, useEffect } from "react";
-import { Text, View } from "@/components/Themed";
+import React, { useCallback, useState, useEffect } from "react";
 import {
+  Text,
+  View,
   SafeAreaView,
   RefreshControl,
   FlatList,
-  Button,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
-import {
-  getExtractedTexts,
-  deleteExtractedText,
-  clearExtractedTexts,
-} from "@/lib/db";
+import { getExtractedTexts, deleteExtractedText } from "@/lib/db";
 import { ExtractedText } from "@/types/definitions";
-import { translateText } from "@/lib/googleTranslate"; // Add this import
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function HistoryScreen() {
   const [extractedTexts, setExtractedTexts] = useState<ExtractedText[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [translations, setTranslations] = useState<Record<string, string>>({});
+  const [activeTab, setActiveTab] = useState("Phrasebook");
   const router = useRouter();
 
   const loadExtractedTexts = useCallback(async () => {
@@ -34,82 +31,73 @@ export default function HistoryScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await loadExtractedTexts();
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 500);
+    setRefreshing(false);
   }, [loadExtractedTexts]);
-
-  const handleTranslate = async (text: string, id: number) => {
-    const translated = await translateText(text, "en");
-    setTranslations((prev) => ({ ...prev, [id]: translated }));
-  };
-
-  const clearHistory = async () => {
-    await clearExtractedTexts();
-    await loadExtractedTexts();
-  };
 
   useEffect(() => {
     loadExtractedTexts();
   }, []);
 
+  const handleDelete = useCallback(
+    (id: number) => {
+      Alert.alert("Delete Item", "Are you sure you want to delete this item?", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteExtractedText(id);
+              await loadExtractedTexts();
+            } catch (error) {
+              console.error("Error deleting item:", error);
+            }
+          },
+        },
+      ]);
+    },
+    [loadExtractedTexts]
+  );
+
   return (
-    <SafeAreaView className="flex-1 items-center">
+    <SafeAreaView className="flex-1 bg-[#1B0112]">
       <FlatList
         data={extractedTexts}
         renderItem={({ item }) => (
           <TouchableOpacity
-            activeOpacity={1}
+            activeOpacity={0.7}
             onPress={() =>
-              router.push({
-                pathname: "/detail",
-                params: {
-                  text: item.text.toString(),
-                  translatedText: translations[item.id],
-                },
-              })
+              router.push({ pathname: "/detail", params: { id: item.id } })
             }
+            className="border-b border-[#5A0834] p-4"
           >
-            <View className="m-4 bg-slate-500 p-2 rounded">
-              <Text className="text-white">{item.text}</Text>
-              <Text className="text-xs text-gray-300 mt-1">
-                {new Date(item.timestamp).toLocaleString()}
-              </Text>
-              {translations[item.id] && (
-                <View className="m-4 bg-slate-700 p-2 rounded">
-                  <Text className="text-white">Translated Text:</Text>
-                  <Text className="text-white">{translations[item.id]}</Text>
-                </View>
-              )}
-              <Button
-                title="Translate"
-                onPress={() => handleTranslate(item.text.toString(), item.id)}
-              />
+            <View className="flex-row justify-between items-start">
+              <View className="flex-1 mr-4">
+                <Text className="text-[#E44EC3] text-base mb-2">
+                  {item.originalText}
+                </Text>
+                <Text className="text-[#9D0B51] text-base">
+                  {item.translatedText}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={() => handleDelete(item.id)}>
+                <MaterialIcons
+                  name="delete-outline"
+                  size={24}
+                  color="#E44EC3"
+                />
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ padding: 20 }}
-        ListHeaderComponent={
-          <Text className="text-2xl font-bold text-center text-violet-600 m-4">
-            Extracted Texts History
-          </Text>
-        }
-        ListEmptyComponent={
-          <Text className="text-center text-gray-500">No extracted texts</Text>
-        }
-        ListFooterComponent={
-          <TouchableOpacity
-            onPress={clearHistory}
-            className="bg-red-500 p-2 rounded-3xl m-4"
-          >
-            <Text className="text-white text-center text-lg">
-              Clear History
-            </Text>
-          </TouchableOpacity>
-        }
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={
+          <Text className="text-center text-[#9D0B51] mt-4">
+            No saved phrases
+          </Text>
         }
       />
     </SafeAreaView>
