@@ -23,7 +23,7 @@ export const deleteExtractedText = async (id: number) => {
 };
 
 export const saveExtractedText = async (translatedEntity: TranslatedEntity) => {
-  const result = await db.runAsync(
+  await db.runAsync(
     "INSERT INTO extracted_texts (original_text, original_language_code, translated_text, translated_language_code, timestamp) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)",
     translatedEntity.originalText,
     translatedEntity.originalLanguage,
@@ -33,7 +33,6 @@ export const saveExtractedText = async (translatedEntity: TranslatedEntity) => {
 };
 
 export const getExtractedTexts = (): Promise<ExtractedText[]> => {
-  //   console.log("getExtractedTexts");
   return new Promise((resolve, reject) => {
     db.withTransactionAsync(async () => {
       try {
@@ -42,11 +41,15 @@ export const getExtractedTexts = (): Promise<ExtractedText[]> => {
         );
         const texts: ExtractedText[] = result.map((row: any) => ({
           id: row.id,
-          text: row.text,
+          originalText: row.original_text,
+          originalLanguage: row.original_language_code,
+          translatedText: row.translated_text,
+          translatedLanguage: row.translated_language_code,
           timestamp: row.timestamp,
         }));
         resolve(texts);
       } catch (error) {
+        console.error("Error getting extracted texts:", error);
         reject(error);
       }
     });
