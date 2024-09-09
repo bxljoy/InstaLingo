@@ -16,7 +16,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 export default function HistoryScreen() {
   const [extractedTexts, setExtractedTexts] = useState<ExtractedText[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState("Phrasebook");
   const router = useRouter();
 
   const loadExtractedTexts = useCallback(async () => {
@@ -67,16 +66,31 @@ export default function HistoryScreen() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() =>
-              router.push({ pathname: "/detail", params: { id: item.id } })
+              router.push({
+                pathname: "/detail",
+                params: {
+                  id: item.id,
+                  text: item.originalText,
+                  translatedText: item.translatedText,
+                },
+              })
             }
             className="border-b border-[#5A0834] p-4"
           >
             <View className="flex-row justify-between items-start">
               <View className="flex-1 mr-4">
-                <Text className="text-[#E44EC3] text-base mb-2">
+                <Text
+                  className="text-[#E44EC3] text-base mb-2"
+                  numberOfLines={3}
+                  ellipsizeMode="tail"
+                >
                   {item.originalText}
                 </Text>
-                <Text className="text-[#9D0B51] text-base">
+                <Text
+                  className="text-[#9D0B51] text-base"
+                  numberOfLines={3}
+                  ellipsizeMode="tail"
+                >
                   {item.translatedText}
                 </Text>
               </View>

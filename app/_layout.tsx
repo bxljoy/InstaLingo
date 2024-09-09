@@ -34,7 +34,7 @@ export default function RootLayout() {
     <MenuProvider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="menu" />
+        <Stack.Screen name="(study)" options={{ headerShown: false }} />
       </Stack>
     </MenuProvider>
   );

@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Animated,
-  Dimensions,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import { initDatabase, saveExtractedText } from "@/lib/db";
@@ -14,6 +7,8 @@ import { translateText } from "@/lib/googleTranslate";
 import RNPickerSelect from "react-native-picker-select";
 import { MaterialIcons } from "@expo/vector-icons";
 import { TranslatedEntity } from "@/types/definitions";
+import { useRouter } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
 
 // Add supported languages
 const LANGUAGES = [
@@ -54,7 +49,7 @@ export default function LearnScreen() {
     useState<TranslatedEntity | null>(null);
   const [copiedExtracted, setCopiedExtracted] = useState(false);
   const [copiedTranslated, setCopiedTranslated] = useState(false);
-
+  const router = useRouter();
   useEffect(() => {
     (async () => {
       await initDatabase();
@@ -116,6 +111,13 @@ export default function LearnScreen() {
     <View className="flex-1 bg-[#1B0112]">
       <ScrollView className="flex-1">
         <View className="bg-[#5A0834] rounded-t-3xl p-6 mt-6">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="flex flex-row items-center gap-2 mb-4"
+          >
+            <FontAwesome name="arrow-left" size={24} color="#E44EC3" />
+            <Text className="text-lg text-[#E44EC3]">Back</Text>
+          </TouchableOpacity>
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-[#E44EC3] text-lg font-bold">
               Extracted Text:
