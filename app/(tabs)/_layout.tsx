@@ -3,7 +3,6 @@ import { useColorScheme as _useColorScheme, Alert } from "react-native";
 import { Tabs } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Colors from "@/constants/Colors";
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import {
   Menu,
   MenuOptions,
@@ -66,9 +65,7 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: Colors[colorScheme ?? "light"].background,
         },
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+
         headerStyle: {
           backgroundColor: Colors[colorScheme ?? "light"].background,
         },
