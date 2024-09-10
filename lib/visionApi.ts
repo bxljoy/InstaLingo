@@ -78,10 +78,29 @@ export const analyzeImage = async (
   imageUri: string
 ): Promise<string | null> => {
   try {
-    // Check cache first
-    const cachedResult = await getCachedResult(imageUri);
-    if (cachedResult) return cachedResult;
+    const cacheKey = await Crypto.digestStringAsync(
+      Crypto.CryptoDigestAlgorithm.MD5,
+      imageUri
+    );
+    const cachePath = `${IMAGE_CACHE_DIR}${cacheKey}.json`;
 
+    // Check if the directory exists, if not, create it
+    const dirInfo = await FileSystem.getInfoAsync(IMAGE_CACHE_DIR);
+    if (!dirInfo.exists) {
+      await FileSystem.makeDirectoryAsync(IMAGE_CACHE_DIR, {
+        intermediates: true,
+      });
+    }
+
+    // Check cache first
+    const cacheExists = await FileSystem.getInfoAsync(cachePath);
+    if (cacheExists.exists) {
+      console.log("Using cached vision API result");
+      const cachedData = await FileSystem.readAsStringAsync(cachePath);
+      return JSON.parse(cachedData);
+    }
+
+    console.log("Fetching new vision API result");
     const apiKey = await getApiKey();
     const compressedImageUri = await compressImage(imageUri);
     const base64Image = await getBase64FromUri(compressedImageUri);
@@ -110,11 +129,14 @@ export const analyzeImage = async (
     }
 
     const result = await response.json();
-    // console.log(result);
     const detections = result.text;
 
     if (detections) {
-      await cacheResult(imageUri, detections);
+      // Cache the result
+      await FileSystem.writeAsStringAsync(
+        cachePath,
+        JSON.stringify(detections)
+      );
       return detections;
     } else {
       console.log("No text detected");

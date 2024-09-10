@@ -97,7 +97,7 @@ export default function TabLayout() {
                   },
                 }}
               >
-                <MenuOption
+                {/* <MenuOption
                   onSelect={handleClearDatabase}
                   text="Clear Database"
                   customStyles={{
@@ -107,7 +107,7 @@ export default function TabLayout() {
                       padding: 10,
                     },
                   }}
-                />
+                /> */}
                 <MenuOption
                   onSelect={handleClearHistory}
                   text="Clear History"

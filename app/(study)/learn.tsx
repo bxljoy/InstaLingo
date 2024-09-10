@@ -9,35 +9,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { TranslatedEntity } from "@/types/definitions";
 import { useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
-
-// Add supported languages
-const LANGUAGES = [
-  { code: "en", name: "English" },
-  { code: "es", name: "Spanish" },
-  { code: "fr", name: "French" },
-  { code: "de", name: "German" },
-  { code: "it", name: "Italian" },
-  { code: "ja", name: "Japanese" },
-  { code: "zh-CN", name: "Chinese (Simplified)" },
-  { code: "zh-TW", name: "Chinese (Traditional)" },
-  { code: "ru", name: "Russian" },
-  { code: "pt", name: "Portuguese" },
-  { code: "ar", name: "Arabic" },
-  { code: "hi", name: "Hindi" },
-  { code: "bn", name: "Bengali" },
-  { code: "pa", name: "Punjabi" },
-  { code: "ur", name: "Urdu" },
-  { code: "vi", name: "Vietnamese" },
-  { code: "tr", name: "Turkish" },
-  { code: "id", name: "Indonesian" },
-  { code: "ms", name: "Malay" },
-  { code: "th", name: "Thai" },
-  { code: "ko", name: "Korean" },
-  { code: "nl", name: "Dutch" },
-  { code: "sv", name: "Swedish" },
-  { code: "no", name: "Norwegian" },
-  // Add more languages as needed
-];
+import { getAllLanguages } from "@/lib/languageCodeMapping";
 
 export default function LearnScreen() {
   const { extractedText } = useLocalSearchParams();
@@ -50,6 +22,7 @@ export default function LearnScreen() {
   const [copiedExtracted, setCopiedExtracted] = useState(false);
   const [copiedTranslated, setCopiedTranslated] = useState(false);
   const router = useRouter();
+
   useEffect(() => {
     (async () => {
       await initDatabase();
@@ -70,8 +43,7 @@ export default function LearnScreen() {
       setIsSaving(true);
       try {
         await saveExtractedText(translatedEntity);
-        // console.log("translatedEntity saved successfully");
-        showBanner(); // Show banner after successful save
+        showBanner();
       } catch (error) {
         console.error("Error saving translatedEntity:", error);
       } finally {
@@ -100,7 +72,6 @@ export default function LearnScreen() {
           targetLanguage
         );
         setTranslatedEntity(translatedEntity);
-        // console.log("TranslatedEntity:", translatedEntity);
       } catch (error) {
         console.error("Error translating text:", error);
       }
@@ -142,10 +113,10 @@ export default function LearnScreen() {
           <View className="mb-4">
             <RNPickerSelect
               onValueChange={(value) => setTargetLanguage(value)}
-              items={LANGUAGES.map((lang) => ({
+              items={getAllLanguages().map((lang) => ({
                 label: lang.name,
-                value: lang.code,
-                key: lang.code,
+                value: lang.translate,
+                key: lang.translate,
               }))}
               value={targetLanguage}
               useNativeAndroidPickerStyle={false}
