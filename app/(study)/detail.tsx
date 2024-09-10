@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Text, View } from "@/components/Themed";
+import Slider from "@react-native-community/slider";
 import { useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
@@ -25,6 +26,7 @@ export default function DetailScreen() {
   const [playingText, setPlayingText] = useState<
     "original" | "translated" | null
   >(null);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
 
   useEffect(() => {
     return () => {
@@ -93,11 +95,19 @@ export default function DetailScreen() {
 
       newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       await newSound.playAsync();
+      await newSound.setRateAsync(playbackSpeed, true);
     } catch (error) {
       console.error("Error playing audio:", error);
       setSound(null);
       setPlayingText(null);
       setIsBuffering(false);
+    }
+  };
+
+  const handleSpeedChange = async (newSpeed: number) => {
+    setPlaybackSpeed(newSpeed);
+    if (sound) {
+      await sound.setRateAsync(newSpeed, true);
     }
   };
 
@@ -141,6 +151,22 @@ export default function DetailScreen() {
               />
             </TouchableOpacity>
           </View>
+        </View>
+        <View className="bg-[#5A0834] rounded-lg p-4 mb-6">
+          <Text className="text-lg text-[#E44EC3] mb-2">Playback Speed:</Text>
+          <Slider
+            style={{ width: "100%", height: 40 }}
+            minimumValue={0.5}
+            maximumValue={2}
+            value={playbackSpeed}
+            onValueChange={handleSpeedChange}
+            minimumTrackTintColor="#E44EC3"
+            maximumTrackTintColor="#000000"
+            thumbTintColor="#E44EC3"
+          />
+          <Text className="text-white text-center">
+            {playbackSpeed.toFixed(2)}x
+          </Text>
         </View>
         {translatedText && (
           <View className="bg-[#5A0834] rounded-lg p-4 relative mb-8">
