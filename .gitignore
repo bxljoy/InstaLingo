@@ -7,6 +7,7 @@ node_modules/
 .expo/
 dist/
 web-build/
+app.json
 
 # Native
 *.orig.*
@@ -40,5 +41,3 @@ yarn-error.*
 expo-env.d.ts
 # @end expo-cli
 
-# api key
-config.ts
