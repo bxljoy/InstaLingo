@@ -19,6 +19,11 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
+  const [expoPushToken, setExpoPushToken] = useState<string | undefined>("");
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
+  const router = useRouter();
+
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
@@ -30,16 +35,9 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
-
-  const [expoPushToken, setExpoPushToken] = useState<string | undefined>("");
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
-  const router = useRouter();
-
   useEffect(() => {
+    if (!loaded) return;
+
     registerForPushNotificationsAsync().then((token) =>
       setExpoPushToken(token)
     );
@@ -80,7 +78,11 @@ export default function RootLayout() {
       );
       Notifications.removeNotificationSubscription(responseListener.current!);
     };
-  }, [router]);
+  }, [loaded, router]);
+
+  if (!loaded) {
+    return null;
+  }
 
   return (
     <MenuProvider>
