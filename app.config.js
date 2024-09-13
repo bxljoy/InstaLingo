@@ -45,13 +45,16 @@ export default ({ config }) => ({
     "expo-secure-store",
     "expo-av",
     "expo-notifications",
-    {
-      icon: "./assets/images/notification-icon.png",
-      color: "#ffffff",
-      sounds: [
-        "./assets/sounds/notification-sound.m4r",
-        "./assets/sounds/notification-sound-other.m4r",
-      ],
-    },
+    [
+      "expo-notifications",
+      {
+        icon: "./assets/images/notification-icon.png",
+        color: "#ffffff",
+        sounds: [
+          "./assets/sounds/notification-sound.m4r",
+          "./assets/sounds/notification-sound-other.m4r",
+        ],
+      },
+    ],
   ],
 });
