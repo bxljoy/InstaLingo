@@ -10,7 +10,11 @@
     "preview": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {
+      "ios": {
+        "provisioningProfilePath": "provisioning/InstaLingo_Push_Notifications_Profile.mobileprovision"
+      }
+    }
   },
   "submit": {
     "production": {}
