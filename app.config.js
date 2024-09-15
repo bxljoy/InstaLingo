@@ -56,5 +56,16 @@ export default ({ config }) => ({
         ],
       },
     ],
+    [
+      "expo-build-properties",
+      {
+        android: {
+          usesCleartextTraffic: true,
+        },
+        ios: {
+          useFrameworks: "static",
+        },
+      },
+    ],
   ],
 });
