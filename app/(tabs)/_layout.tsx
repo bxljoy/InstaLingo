@@ -9,8 +9,11 @@ import {
   MenuOption,
   MenuTrigger,
 } from "react-native-popup-menu";
-import { clearDatabase, clearExtractedTexts } from "@/lib/db";
+import { clearExtractedTexts } from "@/lib/db";
+import { signOut } from "firebase/auth";
 import { MaterialIcons } from "@expo/vector-icons";
+import { auth } from "@/firebase/config";
+import { useRouter } from "expo-router";
 
 // Custom hook for theme management
 function useColorScheme() {
@@ -37,14 +40,15 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const { colorScheme, toggleColorScheme } = useColorScheme();
-
-  const handleClearDatabase = async () => {
+  const router = useRouter();
+  const handleLogOut = async () => {
     try {
-      await clearDatabase();
-      Alert.alert("Success", "Database cleared successfully");
+      await signOut(auth);
+      // Alert.alert("Success", "Logged out successfully");
+      router.push("/sign-in");
     } catch (error) {
-      console.error("Error clearing database:", error);
-      Alert.alert("Error", "Failed to clear database");
+      console.error("Error logging out:", error);
+      Alert.alert("Error", "Failed to log out");
     }
   };
 
@@ -97,9 +101,9 @@ export default function TabLayout() {
                   },
                 }}
               >
-                {/* <MenuOption
-                  onSelect={handleClearDatabase}
-                  text="Clear Database"
+                <MenuOption
+                  onSelect={handleLogOut}
+                  text="Log Out"
                   customStyles={{
                     optionText: {
                       color: Colors[colorScheme ?? "light"].text,
@@ -107,7 +111,7 @@ export default function TabLayout() {
                       padding: 10,
                     },
                   }}
-                /> */}
+                />
                 <MenuOption
                   onSelect={handleClearHistory}
                   text="Clear History"
