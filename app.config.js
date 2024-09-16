@@ -34,6 +34,8 @@ export default ({ config }) => ({
     visionApiKey: process.env.VISION_API_KEY,
     googleTranslateApiKey: process.env.GOOGLE_TRANSLATE_API_KEY,
     googleTtsApiKey: process.env.GOOGLE_TTS_API_KEY,
+    firebaseAppId: process.env.FIREBASE_APP_ID,
+    firebaseApiKey: process.env.FIREBASE_API_KEY,
     eas: {
       projectId: "13b1a28f-354c-45d2-9907-91a9f9abce7e",
     },
