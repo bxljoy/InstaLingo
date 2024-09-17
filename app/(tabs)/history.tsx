@@ -9,21 +9,25 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { getExtractedTexts, deleteExtractedText } from "@/lib/db";
+import { getExtractedTexts, deleteExtractedText, initDatabase } from "@/lib/db";
 import { ExtractedText } from "@/types/definitions";
 import { MaterialIcons } from "@expo/vector-icons";
+import { auth } from "@/firebase/config";
 
 export default function HistoryScreen() {
   const [extractedTexts, setExtractedTexts] = useState<ExtractedText[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
+  const userId = auth.currentUser?.uid;
 
   const loadExtractedTexts = useCallback(async () => {
-    try {
-      const texts = await getExtractedTexts();
-      setExtractedTexts(texts);
-    } catch (error) {
-      console.error("Error loading extracted texts:", error);
+    if (userId) {
+      try {
+        const texts = await getExtractedTexts(userId);
+        setExtractedTexts(texts);
+      } catch (error) {
+        console.error("Error loading extracted texts:", error);
+      }
     }
   }, []);
 
@@ -34,6 +38,9 @@ export default function HistoryScreen() {
   }, [loadExtractedTexts]);
 
   useEffect(() => {
+    (async () => {
+      await initDatabase();
+    })();
     loadExtractedTexts();
   }, []);
 
@@ -45,11 +52,13 @@ export default function HistoryScreen() {
           text: "Delete",
           style: "destructive",
           onPress: async () => {
-            try {
-              await deleteExtractedText(id);
-              await loadExtractedTexts();
-            } catch (error) {
-              console.error("Error deleting item:", error);
+            if (userId) {
+              try {
+                await deleteExtractedText(userId, id);
+                await loadExtractedTexts();
+              } catch (error) {
+                console.error("Error deleting item:", error);
+              }
             }
           },
         },

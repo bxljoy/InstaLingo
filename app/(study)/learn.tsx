@@ -10,6 +10,7 @@ import { TranslatedEntity } from "@/types/definitions";
 import { useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { getAllLanguages } from "@/lib/languageCodeMapping";
+import { auth } from "@/firebase/config";
 
 export default function LearnScreen() {
   const { extractedText } = useLocalSearchParams();
@@ -42,8 +43,13 @@ export default function LearnScreen() {
     if (translatedEntity) {
       setIsSaving(true);
       try {
-        await saveExtractedText(translatedEntity);
-        showBanner();
+        const user = auth.currentUser;
+        if (user) {
+          await saveExtractedText(user.uid, translatedEntity);
+          showBanner();
+        } else {
+          console.error("User is not logged in.");
+        }
       } catch (error) {
         console.error("Error saving translatedEntity:", error);
       } finally {
