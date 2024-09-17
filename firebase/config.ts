@@ -23,6 +23,6 @@ const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage),
 });
 
-console.log("Firebase config:", firebaseConfig);
+// console.log("Firebase config:", firebaseConfig);
 
 export { auth };
