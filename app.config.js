@@ -19,6 +19,7 @@ export default ({ config }) => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.instalingo.app",
+    googleServicesFile: "./GoogleService-Info.plist",
   },
   android: {
     adaptiveIcon: {
@@ -36,6 +37,7 @@ export default ({ config }) => ({
     googleTtsApiKey: process.env.GOOGLE_TTS_API_KEY,
     firebaseAppId: process.env.FIREBASE_APP_ID,
     firebaseApiKey: process.env.FIREBASE_API_KEY,
+    webClientId: process.env.WEB_CLIENT_ID,
     eas: {
       projectId: "13b1a28f-354c-45d2-9907-91a9f9abce7e",
     },
@@ -69,5 +71,7 @@ export default ({ config }) => ({
         },
       },
     ],
+    "@react-native-google-signin/google-signin",
+    "expo-dev-client",
   ],
 });
