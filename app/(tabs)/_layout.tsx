@@ -9,7 +9,7 @@ import {
   MenuOption,
   MenuTrigger,
 } from "react-native-popup-menu";
-import { clearExtractedTexts } from "@/lib/db";
+import { clearExtractedTexts, clearDatabase } from "@/lib/db";
 import { signOut } from "firebase/auth";
 import { MaterialIcons } from "@expo/vector-icons";
 import { auth } from "@/firebase/config";
@@ -53,12 +53,24 @@ export default function TabLayout() {
   };
 
   const handleClearHistory = async () => {
+    if (auth.currentUser) {
+      try {
+        await clearExtractedTexts(auth.currentUser.uid);
+        Alert.alert("Success", "History cleared successfully");
+      } catch (error) {
+        console.error("Error clearing history:", error);
+        Alert.alert("Error", "Failed to clear history");
+      }
+    }
+  };
+
+  const handleClearDatabase = async () => {
     try {
-      await clearExtractedTexts();
-      Alert.alert("Success", "History cleared successfully");
+      await clearDatabase();
+      Alert.alert("Success", "Database cleared successfully");
     } catch (error) {
-      console.error("Error clearing history:", error);
-      Alert.alert("Error", "Failed to clear history");
+      console.error("Error clearing database:", error);
+      Alert.alert("Error", "Failed to clear database");
     }
   };
 
@@ -115,6 +127,17 @@ export default function TabLayout() {
                 <MenuOption
                   onSelect={handleClearHistory}
                   text="Clear History"
+                  customStyles={{
+                    optionText: {
+                      color: Colors[colorScheme ?? "light"].text,
+                      fontSize: 16,
+                      padding: 10,
+                    },
+                  }}
+                />
+                <MenuOption
+                  onSelect={handleClearDatabase}
+                  text="Clear Database"
                   customStyles={{
                     optionText: {
                       color: Colors[colorScheme ?? "light"].text,
