@@ -11,6 +11,7 @@ import { useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { getAllLanguages } from "@/lib/languageCodeMapping";
 import { auth } from "@/firebase/config";
+import { apiWrapper } from "@/lib/apiWrapper";
 
 export default function LearnScreen() {
   const { extractedText } = useLocalSearchParams();
@@ -73,9 +74,8 @@ export default function LearnScreen() {
   const handleTranslate = async () => {
     if (extractedText) {
       try {
-        const translatedEntity = await translateText(
-          extractedText as string,
-          targetLanguage
+        const translatedEntity = await apiWrapper(() =>
+          translateText(extractedText as string, targetLanguage)
         );
         setTranslatedEntity(translatedEntity);
       } catch (error) {

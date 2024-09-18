@@ -15,6 +15,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { textToSpeech } from "@/lib/textToSpeech";
 import { Audio } from "expo-av";
+import { apiWrapper } from "@/lib/apiWrapper";
 
 export default function DetailScreen() {
   const { text, translatedText } = useLocalSearchParams();
@@ -88,14 +89,18 @@ export default function DetailScreen() {
     setPlayingText(textType);
 
     try {
-      const newSound = await textToSpeech(textToSpeak, languageCode);
+      const newSound = await apiWrapper(() =>
+        textToSpeech(textToSpeak, languageCode)
+      );
       setSound(newSound);
 
       await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
 
-      newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-      await newSound.playAsync();
-      await newSound.setRateAsync(playbackSpeed, true);
+      if (newSound) {
+        newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+        await newSound.playAsync();
+        await newSound.setRateAsync(playbackSpeed, true);
+      }
     } catch (error) {
       console.error("Error playing audio:", error);
       setSound(null);
