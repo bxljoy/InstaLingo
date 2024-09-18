@@ -4,8 +4,9 @@ import { Text } from "@/components/Themed";
 import {
   signInWithEmailAndPassword,
   signInWithCredential,
+  User,
 } from "firebase/auth";
-import { auth } from "../../firebase/config";
+import { auth, db } from "../../firebase/config";
 import { useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import {
@@ -14,6 +15,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { GoogleAuthProvider } from "firebase/auth";
 import Constants from "expo-constants";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -28,9 +30,43 @@ export default function SignIn() {
     });
   }, []);
 
+  const initializeApiUsage = async (user: User) => {
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      // New user, initialize API usage
+      await setDoc(userDocRef, {
+        apiCalls: 0,
+        lastResetDate: new Date().toISOString(),
+      });
+    } else {
+      // Existing user, check if we need to reset the counter
+      const userData = userDoc.data();
+      const lastResetDate = new Date(userData.lastResetDate);
+      const now = new Date();
+
+      if (
+        now.getMonth() !== lastResetDate.getMonth() ||
+        now.getFullYear() !== lastResetDate.getFullYear()
+      ) {
+        // Reset counter if it's a new month
+        await setDoc(userDocRef, {
+          apiCalls: 0,
+          lastResetDate: now.toISOString(),
+        });
+      }
+    }
+  };
+
   const handleSignIn = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await initializeApiUsage(userCredential.user);
       router.replace("/(tabs)");
     } catch (error: any) {
       Alert.alert("Error", error.message);
@@ -46,7 +82,8 @@ export default function SignIn() {
         const idToken = data?.idToken;
         if (idToken) {
           const credential = GoogleAuthProvider.credential(idToken);
-          await signInWithCredential(auth, credential);
+          const userCredential = await signInWithCredential(auth, credential);
+          await initializeApiUsage(userCredential.user);
           router.replace("/(tabs)");
         }
       }

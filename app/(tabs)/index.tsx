@@ -7,6 +7,7 @@ import { analyzeImage } from "@/lib/visionApi";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { apiWrapper } from "@/lib/apiWrapper";
 
 export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState(false);
@@ -53,7 +54,7 @@ export default function HomeScreen() {
     setIsExtracting(true);
     try {
       if (image) {
-        const text = await analyzeImage(image);
+        const text = await apiWrapper(() => analyzeImage(image));
         router.push({
           pathname: "/learn",
           params: { extractedText: text },
