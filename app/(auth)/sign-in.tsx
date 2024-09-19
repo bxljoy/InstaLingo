@@ -69,7 +69,18 @@ export default function SignIn() {
       await initializeApiUsage(userCredential.user);
       router.replace("/(tabs)");
     } catch (error: any) {
-      Alert.alert("Error", error.message);
+      let errorMessage = "An error occurred during sign in. Please try again.";
+
+      if (error.code === "auth/user-not-found") {
+        errorMessage =
+          "No account found with this email. Please check your email or sign up.";
+      } else if (error.code === "auth/wrong-password") {
+        errorMessage = "Incorrect password. Please try again.";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "Invalid email address. Please enter a valid email.";
+      }
+
+      Alert.alert("Sign In Error", errorMessage);
     }
   };
 
@@ -88,8 +99,16 @@ export default function SignIn() {
         }
       }
     } catch (error: any) {
-      console.error("Error signing in with Google:", error);
-      Alert.alert("Error", error.message);
+      let errorMessage =
+        "An error occurred during Google Sign In. Please try again.";
+      if (error.code === "SIGN_IN_CANCELLED") {
+        errorMessage = "Google Sign In was cancelled.";
+      } else if (error.code === "IN_PROGRESS") {
+        errorMessage = "Google Sign In is already in progress.";
+      } else if (error.code === "PLAY_SERVICES_NOT_AVAILABLE") {
+        errorMessage = "Google Play Services is not available on this device.";
+      }
+      Alert.alert("Google Sign In Error", errorMessage);
     }
   };
 
