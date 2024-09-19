@@ -1,15 +1,29 @@
 import React, { useState } from "react";
 import { View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Text } from "@/components/Themed";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase/config";
+import { createUserWithEmailAndPassword, User } from "firebase/auth";
+import { auth, db } from "../../firebase/config";
 import { useRouter } from "expo-router";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
+
+  const initializeApiUsage = async (user: User) => {
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      // New user, initialize API usage
+      await setDoc(userDocRef, {
+        apiCalls: 0,
+        lastResetDate: new Date().toISOString(),
+      });
+    }
+  };
 
   const handleSignUp = async () => {
     if (password !== confirmPassword) {
@@ -18,10 +32,26 @@ export default function SignUp() {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await initializeApiUsage(userCredential.user);
       router.replace("/(tabs)");
     } catch (error: any) {
-      Alert.alert("Error", error.message);
+      let errorMessage = "An error occurred during sign up. Please try again.";
+
+      if (error.code === "auth/email-already-in-use") {
+        errorMessage =
+          "This email is already in use. Please use a different email or sign in.";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "Invalid email address. Please enter a valid email.";
+      } else if (error.code === "auth/weak-password") {
+        errorMessage = "Password is too weak. Please use a stronger password.";
+      }
+
+      Alert.alert("Sign Up Error", errorMessage);
     }
   };
 
