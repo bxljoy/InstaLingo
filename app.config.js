@@ -20,6 +20,12 @@ export default ({ config }) => ({
     supportsTablet: true,
     bundleIdentifier: "com.instalingo.app",
     googleServicesFile: "./GoogleService-Info.plist",
+    infoPlist: {
+      NSCameraUsageDescription:
+        "InstaLingo uses your camera to capture images of objects and text for instant translation. These images are processed locally and are not stored or shared without your consent.",
+      NSPhotoLibraryUsageDescription:
+        "InstaLingo accesses your photo library to allow you to select images for translation. Selected images are processed locally and are not stored or shared without your consent.",
+    },
   },
   android: {
     adaptiveIcon: {
@@ -27,6 +33,7 @@ export default ({ config }) => ({
       backgroundColor: "#FFFFFF",
     },
     package: "com.instalingo.app",
+    permissions: ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
   },
   web: {
     favicon: "./assets/images/favicon.png",

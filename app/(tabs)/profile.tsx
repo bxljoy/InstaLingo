@@ -74,6 +74,14 @@ export default function ProfileScreen() {
       )}
       <TouchableOpacity
         className="bg-[#9D0B51] p-4 rounded-lg mb-4"
+        onPress={() => router.push("/privacy-settings")}
+      >
+        <Text className="text-white text-center font-bold">
+          Privacy Settings
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        className="bg-[#9D0B51] p-4 rounded-lg mb-4"
         onPress={handleLogOut}
         disabled={isLoggingOut}
       >
