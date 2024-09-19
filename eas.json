@@ -18,6 +18,14 @@
           "GOOGLE_SERVICES_FILE": "{{ GOOGLE_SERVICES_PLIST }}"
         }
       }
+    },
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true,
+        "buildConfiguration": "Debug"
+      }
     }
   },
   "submit": {
