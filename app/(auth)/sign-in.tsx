@@ -5,6 +5,7 @@ import {
   signInWithEmailAndPassword,
   signInWithCredential,
   User,
+  signOut,
 } from "firebase/auth";
 import { auth, db } from "../../firebase/config";
 import { useRouter } from "expo-router";
@@ -15,7 +16,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { GoogleAuthProvider } from "firebase/auth";
 import Constants from "expo-constants";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -112,6 +113,26 @@ export default function SignIn() {
     }
   };
 
+  const revokeGoogleAccess = async () => {
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      await signOut(auth);
+      // Delete user data from Firestore
+      if (auth.currentUser) {
+        const userDocRef = doc(db, "users", auth.currentUser.uid);
+        await deleteDoc(userDocRef);
+      }
+      Alert.alert(
+        "Access Revoked",
+        "Your Google access has been revoked and all associated data has been removed."
+      );
+    } catch (error) {
+      console.error("Error revoking access:", error);
+      Alert.alert("Error", "Failed to revoke access. Please try again.");
+    }
+  };
+
   return (
     <View className="flex-1 justify-center items-center bg-[#1B0112] p-8">
       <Text className="text-3xl font-bold text-[#E44EC3] mb-8">Sign In</Text>
@@ -154,6 +175,14 @@ export default function SignIn() {
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.replace("/sign-up")}>
         <Text className="text-[#E44EC3]">Don't have an account? Sign Up</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        className="w-full bg-red-500 p-4 rounded-lg mt-4"
+        onPress={revokeGoogleAccess}
+      >
+        <Text className="text-white text-center font-bold">
+          Revoke Google Access
+        </Text>
       </TouchableOpacity>
     </View>
   );
