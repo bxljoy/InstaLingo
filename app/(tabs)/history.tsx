@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { getExtractedTexts, deleteExtractedText, initDatabase } from "@/lib/db";
 import { ExtractedText } from "@/types/definitions";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -29,7 +29,7 @@ export default function HistoryScreen() {
         console.error("Error loading extracted texts:", error);
       }
     }
-  }, []);
+  }, [userId]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -41,8 +41,14 @@ export default function HistoryScreen() {
     (async () => {
       await initDatabase();
     })();
-    loadExtractedTexts();
   }, []);
+
+  // Use useFocusEffect to refresh the history when the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      loadExtractedTexts();
+    }, [loadExtractedTexts])
+  );
 
   const handleDelete = useCallback(
     (id: number) => {
@@ -64,7 +70,7 @@ export default function HistoryScreen() {
         },
       ]);
     },
-    [loadExtractedTexts]
+    [loadExtractedTexts, userId]
   );
 
   return (

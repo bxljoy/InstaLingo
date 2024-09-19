@@ -41,21 +41,30 @@ export default function LearnScreen() {
   };
 
   const handleSaveExtractedText = async () => {
-    if (translatedEntity) {
-      setIsSaving(true);
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          await saveExtractedText(user.uid, translatedEntity);
-          showBanner();
+    setIsSaving(true);
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        let entityToSave: TranslatedEntity;
+        if (translatedEntity) {
+          entityToSave = translatedEntity;
         } else {
-          console.error("User is not logged in.");
+          entityToSave = {
+            originalText: extractedText as string,
+            translatedText: "",
+            originalLanguage: "en",
+            translatedLanguage: targetLanguage,
+          };
         }
-      } catch (error) {
-        console.error("Error saving translatedEntity:", error);
-      } finally {
-        setIsSaving(false);
+        await saveExtractedText(user.uid, entityToSave);
+        showBanner();
+      } else {
+        console.error("User is not logged in.");
       }
+    } catch (error) {
+      console.error("Error saving translatedEntity:", error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
