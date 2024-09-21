@@ -40,6 +40,13 @@ function RootLayoutNav() {
         // Redirect to the home page if the user is signed in and still in the auth group
         router.replace("/(tabs)");
       }
+
+      // Add a delay before hiding the splash screen
+      const timer = setTimeout(() => {
+        SplashScreen.hideAsync();
+      }, 2000); // Adjust this value (in milliseconds) to control how long the splash screen stays
+
+      return () => clearTimeout(timer);
     }
   }, [user, segments, isLoading]);
 
