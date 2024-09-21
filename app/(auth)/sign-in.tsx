@@ -124,23 +124,19 @@ export default function SignIn() {
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-
       // console.log("Apple Authentication completed", credential);
-
       if (credential.identityToken) {
         const provider = new OAuthProvider("apple.com");
         const appleCredential = provider.credential({
           idToken: credential.identityToken!,
           // rawNonce: credential.state ?? undefined,
         });
-
         console.log("Attempting to sign in with Firebase");
         const userCredential = await signInWithCredential(
           auth,
           appleCredential
         );
         console.log("Firebase sign in successful", userCredential.user.uid);
-
         await initializeApiUsage(userCredential.user);
         router.replace("/(tabs)");
       } else {
@@ -152,22 +148,18 @@ export default function SignIn() {
       }
     } catch (error: any) {
       console.error("Apple sign-in error", error);
-
       if (error.code === "ERR_CANCELED") {
         console.log("User canceled Apple Sign In");
         // Optionally show an alert or handle canceled sign-in
       } else {
         let errorMessage =
           "An error occurred during Apple Sign In. Please try again.";
-
         if (error.code) {
           errorMessage += ` Error code: ${error.code}`;
         }
-
         if (error.message) {
           errorMessage += ` Message: ${error.message}`;
         }
-
         Alert.alert("Sign In Error", errorMessage);
       }
     }
@@ -230,16 +222,27 @@ export default function SignIn() {
           style={{ marginRight: 10 }}
         />
         <Text className="text-[#4285F4] text-center font-bold">
-          Sign In with Google
+          Sign in with Google
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        className="bg-white p-3 rounded-md mt-2.5 flex-row items-center justify-center w-full"
+        className="w-full bg-white p-4 rounded-lg mb-4 flex-row justify-center items-center"
         onPress={handleAppleSignIn}
       >
-        <Text className="text-black font-medium">Sign in with Apple</Text>
+        <AntDesign
+          name="apple1"
+          size={24}
+          color="black"
+          style={{ marginRight: 10 }}
+        />
+        <Text className="text-black text-center font-bold">
+          Sign in with Apple
+        </Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.replace("/sign-up")}>
+      <TouchableOpacity
+        onPress={() => router.replace("/sign-up")}
+        className="mt-4"
+      >
         <Text className="text-[#E44EC3]">Don't have an account? Sign Up</Text>
       </TouchableOpacity>
       {/* <TouchableOpacity

@@ -12,7 +12,7 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": false,
+      "autoIncrement": true,
       "ios": {
         "env": {
           "GOOGLE_SERVICES_FILE": "{{ GOOGLE_SERVICES_PLIST }}",
