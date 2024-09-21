@@ -147,9 +147,9 @@ export default function SignIn() {
         );
       }
     } catch (error: any) {
-      console.error("Apple sign-in error", error);
+      // console.error("Apple sign-in error", error);
       if (error.code === "ERR_CANCELED") {
-        console.log("User canceled Apple Sign In");
+        // console.log("User canceled Apple Sign In");
         // Optionally show an alert or handle canceled sign-in
       } else {
         let errorMessage =
@@ -160,7 +160,7 @@ export default function SignIn() {
         if (error.message) {
           errorMessage += ` Message: ${error.message}`;
         }
-        Alert.alert("Sign In Error", errorMessage);
+        // Alert.alert("Sign In Error", errorMessage);
       }
     }
   };
