@@ -15,8 +15,7 @@
       "autoIncrement": true,
       "ios": {
         "env": {
-          "GOOGLE_SERVICES_FILE": "{{ GOOGLE_SERVICES_PLIST }}",
-          "APPLE_AUTH_KEY": "{{ APPLE_AUTH_KEY }}"
+          "GOOGLE_SERVICES_FILE": "{{ GOOGLE_SERVICES_PLIST }}"
         }
       }
     },
