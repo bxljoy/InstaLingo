@@ -80,5 +80,6 @@ export default ({ config }) => ({
     ],
     "@react-native-google-signin/google-signin",
     "expo-dev-client",
+    "expo-apple-authentication",
   ],
 });
