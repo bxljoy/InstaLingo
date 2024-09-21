@@ -12,10 +12,11 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
+      "autoIncrement": false,
       "ios": {
         "env": {
-          "GOOGLE_SERVICES_FILE": "{{ GOOGLE_SERVICES_PLIST }}"
+          "GOOGLE_SERVICES_FILE": "{{ GOOGLE_SERVICES_PLIST }}",
+          "APPLE_AUTH_KEY": "{{ APPLE_AUTH_KEY }}"
         }
       }
     },

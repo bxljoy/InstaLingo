@@ -4,6 +4,7 @@ import { Text } from "@/components/Themed";
 import {
   signInWithEmailAndPassword,
   signInWithCredential,
+  OAuthProvider,
   User,
   signOut,
 } from "firebase/auth";
@@ -17,6 +18,7 @@ import {
 import { GoogleAuthProvider } from "firebase/auth";
 import Constants from "expo-constants";
 import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
+import * as AppleAuthentication from "expo-apple-authentication";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -113,25 +115,83 @@ export default function SignIn() {
     }
   };
 
-  const revokeGoogleAccess = async () => {
+  const handleAppleSignIn = async () => {
     try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-      await signOut(auth);
-      // Delete user data from Firestore
-      if (auth.currentUser) {
-        const userDocRef = doc(db, "users", auth.currentUser.uid);
-        await deleteDoc(userDocRef);
+      console.log("Starting Apple Sign In process");
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      // console.log("Apple Authentication completed", credential);
+
+      if (credential.identityToken) {
+        const provider = new OAuthProvider("apple.com");
+        const appleCredential = provider.credential({
+          idToken: credential.identityToken!,
+          // rawNonce: credential.state ?? undefined,
+        });
+
+        console.log("Attempting to sign in with Firebase");
+        const userCredential = await signInWithCredential(
+          auth,
+          appleCredential
+        );
+        console.log("Firebase sign in successful", userCredential.user.uid);
+
+        await initializeApiUsage(userCredential.user);
+        router.replace("/(tabs)");
+      } else {
+        console.error("No identity token received");
+        Alert.alert(
+          "Sign In Error",
+          "Failed to receive identity token from Apple."
+        );
       }
-      Alert.alert(
-        "Access Revoked",
-        "Your Google access has been revoked and all associated data has been removed."
-      );
-    } catch (error) {
-      console.error("Error revoking access:", error);
-      Alert.alert("Error", "Failed to revoke access. Please try again.");
+    } catch (error: any) {
+      console.error("Apple sign-in error", error);
+
+      if (error.code === "ERR_CANCELED") {
+        console.log("User canceled Apple Sign In");
+        // Optionally show an alert or handle canceled sign-in
+      } else {
+        let errorMessage =
+          "An error occurred during Apple Sign In. Please try again.";
+
+        if (error.code) {
+          errorMessage += ` Error code: ${error.code}`;
+        }
+
+        if (error.message) {
+          errorMessage += ` Message: ${error.message}`;
+        }
+
+        Alert.alert("Sign In Error", errorMessage);
+      }
     }
   };
+
+  // const revokeGoogleAccess = async () => {
+  //   try {
+  //     await GoogleSignin.revokeAccess();
+  //     await GoogleSignin.signOut();
+  //     await signOut(auth);
+  //     // Delete user data from Firestore
+  //     if (auth.currentUser) {
+  //       const userDocRef = doc(db, "users", auth.currentUser.uid);
+  //       await deleteDoc(userDocRef);
+  //     }
+  //     Alert.alert(
+  //       "Access Revoked",
+  //       "Your Google access has been revoked and all associated data has been removed."
+  //     );
+  //   } catch (error) {
+  //     console.error("Error revoking access:", error);
+  //     Alert.alert("Error", "Failed to revoke access. Please try again.");
+  //   }
+  // };
 
   return (
     <View className="flex-1 justify-center items-center bg-[#1B0112] p-8">
@@ -173,17 +233,23 @@ export default function SignIn() {
           Sign In with Google
         </Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        className="bg-white p-3 rounded-md mt-2.5 flex-row items-center justify-center w-full"
+        onPress={handleAppleSignIn}
+      >
+        <Text className="text-black font-medium">Sign in with Apple</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => router.replace("/sign-up")}>
         <Text className="text-[#E44EC3]">Don't have an account? Sign Up</Text>
       </TouchableOpacity>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         className="w-full bg-red-500 p-4 rounded-lg mt-4"
         onPress={revokeGoogleAccess}
       >
         <Text className="text-white text-center font-bold">
           Revoke Google Access
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 }
