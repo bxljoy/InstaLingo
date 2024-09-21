@@ -95,12 +95,12 @@ export const analyzeImage = async (
     // Check cache first
     const cacheExists = await FileSystem.getInfoAsync(cachePath);
     if (cacheExists.exists) {
-      console.log("Using cached vision API result");
+      // console.log("Using cached vision API result");
       const cachedData = await FileSystem.readAsStringAsync(cachePath);
       return JSON.parse(cachedData);
     }
 
-    console.log("Fetching new vision API result");
+    // console.log("Fetching new vision API result");
     const apiKey = await getApiKey();
     const compressedImageUri = await compressImage(imageUri);
     const base64Image = await getBase64FromUri(compressedImageUri);
@@ -139,7 +139,7 @@ export const analyzeImage = async (
       );
       return detections;
     } else {
-      console.log("No text detected");
+      // console.log("No text detected");
       return "No text detected";
     }
   } catch (error) {

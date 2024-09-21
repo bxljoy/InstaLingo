@@ -117,7 +117,7 @@ export default function SignIn() {
 
   const handleAppleSignIn = async () => {
     try {
-      console.log("Starting Apple Sign In process");
+      // console.log("Starting Apple Sign In process");
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
@@ -131,16 +131,16 @@ export default function SignIn() {
           idToken: credential.identityToken!,
           // rawNonce: credential.state ?? undefined,
         });
-        console.log("Attempting to sign in with Firebase");
+        // console.log("Attempting to sign in with Firebase");
         const userCredential = await signInWithCredential(
           auth,
           appleCredential
         );
-        console.log("Firebase sign in successful", userCredential.user.uid);
+        // console.log("Firebase sign in successful", userCredential.user.uid);
         await initializeApiUsage(userCredential.user);
         router.replace("/(tabs)");
       } else {
-        console.error("No identity token received");
+        // console.error("No identity token received");
         Alert.alert(
           "Sign In Error",
           "Failed to receive identity token from Apple."

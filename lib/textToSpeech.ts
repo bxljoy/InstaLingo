@@ -40,13 +40,13 @@ export async function textToSpeech(
     // Check cache first
     const cacheExists = await FileSystem.getInfoAsync(cachePath);
     if (cacheExists.exists) {
-      console.log("Using cached TTS audio file");
+      // console.log("Using cached TTS audio file");
       const audio = new Audio.Sound();
       await audio.loadAsync({ uri: cachePath });
       return audio;
     }
 
-    console.log("Fetching new TTS audio file");
+    // console.log("Fetching new TTS audio file");
     const apiKey = await getApiKey();
     const response = await fetch(GOOGLE_TTS_URL, {
       method: "POST",
