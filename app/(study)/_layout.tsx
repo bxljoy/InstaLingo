@@ -4,7 +4,7 @@ export default function StudyLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
       }}
     />
   );

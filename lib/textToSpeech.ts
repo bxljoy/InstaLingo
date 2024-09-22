@@ -1,21 +1,18 @@
-import * as SecureStore from "expo-secure-store";
-import { GOOGLE_TTS_API_KEY as INITIAL_API_KEY } from "../config";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import * as Crypto from "expo-crypto";
+import { auth } from "@/firebase/config";
 
 const GOOGLE_TTS_URL =
-  "https://europe-central2-instalingo-434320.cloudfunctions.net/googleTextToSpeech";
-const API_KEY_STORAGE_KEY = "google_tts_api_key";
+  "https://europe-central2-instalingo-434320.cloudfunctions.net/googleTextToSpeechFirebase";
 const TTS_CACHE_DIR = `${FileSystem.cacheDirectory}tts_cache/`;
 
-async function getApiKey(): Promise<string> {
-  let apiKey = await SecureStore.getItemAsync(API_KEY_STORAGE_KEY);
-  if (!apiKey) {
-    apiKey = INITIAL_API_KEY;
-    await SecureStore.setItemAsync(API_KEY_STORAGE_KEY, apiKey);
+async function getIdToken(): Promise<string> {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error("User not authenticated");
   }
-  return apiKey;
+  return user.getIdToken();
 }
 
 export async function textToSpeech(
@@ -47,12 +44,12 @@ export async function textToSpeech(
     }
 
     // console.log("Fetching new TTS audio file");
-    const apiKey = await getApiKey();
+    const idToken = await getIdToken();
     const response = await fetch(GOOGLE_TTS_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-API-Key": apiKey,
+        Authorization: `Bearer ${idToken}`,
       },
       body: JSON.stringify({ text, languageCode }),
     });

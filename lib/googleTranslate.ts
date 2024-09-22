@@ -1,23 +1,15 @@
-import * as SecureStore from "expo-secure-store";
-import { GOOGLE_TRANSLATE_API_KEY as INITIAL_API_KEY } from "../config";
-import { TranslatedEntity } from "../types/definitions";
+import { auth } from "@/firebase/config";
+import { TranslatedEntity } from "@/types/definitions";
 
 const GOOGLE_TRANSLATE_URL =
-  "https://europe-central2-instalingo-434320.cloudfunctions.net/googleTranslate";
+  "https://europe-central2-instalingo-434320.cloudfunctions.net/googleTranslateFirebase";
 
-// const GOOGLE_TRANSLATE_URL =
-//   "https://googletranslate-495756842233.europe-central2.run.app";
-
-const API_KEY_STORAGE_KEY = "google_translate_api_key";
-
-async function getApiKey(): Promise<string> {
-  let apiKey = await SecureStore.getItemAsync(API_KEY_STORAGE_KEY);
-  if (!apiKey) {
-    // If the API key isn't in secure storage, use the initial key and store it
-    apiKey = INITIAL_API_KEY;
-    await SecureStore.setItemAsync(API_KEY_STORAGE_KEY, apiKey);
+async function getIdToken(): Promise<string> {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error("User not authenticated");
   }
-  return apiKey;
+  return user.getIdToken();
 }
 
 export async function translateText(
@@ -25,12 +17,12 @@ export async function translateText(
   targetLanguage: string
 ): Promise<TranslatedEntity> {
   try {
-    const apiKey = await getApiKey();
+    const idToken = await getIdToken();
     const response = await fetch(GOOGLE_TRANSLATE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-API-Key": apiKey,
+        Authorization: `Bearer ${idToken}`,
       },
       body: JSON.stringify({ text, targetLanguage }),
     });
