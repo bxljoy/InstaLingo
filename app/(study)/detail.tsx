@@ -119,14 +119,15 @@ export default function DetailScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#1B0112]">
       <ScrollView className="flex-1 px-4 py-6">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="flex flex-row items-center gap-2 mb-4"
-        >
-          <FontAwesome name="arrow-left" size={24} color="#E44EC3" />
-          <Text className="text-lg text-[#E44EC3]">Back</Text>
-        </TouchableOpacity>
-
+        {Platform.OS === "ios" && (
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="flex flex-row items-center gap-2 mb-4"
+          >
+            <FontAwesome name="arrow-left" size={24} color="#E44EC3" />
+            <Text className="text-lg text-[#E44EC3]">Back</Text>
+          </TouchableOpacity>
+        )}
         <View className="bg-[#5A0834] rounded-lg p-4 mb-6 relative">
           <View className="flex-row justify-between items-center mb-2 bg-[#5A0834]">
             <Text className="text-lg text-[#E44EC3] ">Original Text:</Text>

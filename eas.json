@@ -6,16 +6,28 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
     },
     "production": {
       "autoIncrement": true,
       "ios": {
         "env": {
           "GOOGLE_SERVICES_FILE": "{{ GOOGLE_SERVICES_PLIST }}"
+        }
+      },
+      "android": {
+        "buildType": "app-bundle",
+        "env": {
+          "GOOGLE_SERVICES_FILE": "{{ GOOGLE_SERVICES_JSON }}"
         }
       }
     },

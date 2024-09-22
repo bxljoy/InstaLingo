@@ -1,28 +1,16 @@
-import * as SecureStore from "expo-secure-store";
-import { VISION_API_KEY as INITIAL_API_KEY } from "../config";
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as Crypto from "expo-crypto";
+import { auth } from "@/firebase/config";
 
 const CLOUD_FUNCTION_URL =
-  "https://europe-central2-instalingo-434320.cloudfunctions.net/visionApiProxy";
+  "https://europe-central2-instalingo-434320.cloudfunctions.net/visionApiProxyFirebase";
 
 // const CLOUD_FUNCTION_URL =
 //   "https://cloud-vision-api-495756842233.europe-central2.run.app";
 
-const API_KEY_STORAGE_KEY = "vision_api_key";
 const IMAGE_CACHE_DIR = `${FileSystem.cacheDirectory}vision_api_cache/`;
 const MAX_IMAGE_SIZE = 1024; // Max width or height in pixels
-
-async function getApiKey(): Promise<string> {
-  let apiKey = await SecureStore.getItemAsync(API_KEY_STORAGE_KEY);
-  if (!apiKey) {
-    // If the API key isn't in secure storage, use the initial key and store it
-    apiKey = INITIAL_API_KEY;
-    await SecureStore.setItemAsync(API_KEY_STORAGE_KEY, apiKey);
-  }
-  return apiKey;
-}
 
 async function compressImage(uri: string): Promise<string> {
   const { width, height } = await ImageManipulator.manipulateAsync(uri, [], {
@@ -49,29 +37,12 @@ async function compressImage(uri: string): Promise<string> {
   return uri;
 }
 
-async function getCachedResult(imageUri: string): Promise<string | null> {
-  const hashedUri = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.MD5,
-    imageUri
-  );
-  const cachePath = `${IMAGE_CACHE_DIR}${hashedUri}.json`;
-  const cacheExists = await FileSystem.getInfoAsync(cachePath);
-
-  if (cacheExists.exists) {
-    const cachedData = await FileSystem.readAsStringAsync(cachePath);
-    return JSON.parse(cachedData);
+async function getIdToken(): Promise<string> {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error("User not authenticated");
   }
-  return null;
-}
-
-async function cacheResult(imageUri: string, result: string): Promise<void> {
-  const hashedUri = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.MD5,
-    imageUri
-  );
-  const cachePath = `${IMAGE_CACHE_DIR}${hashedUri}.json`;
-  await FileSystem.makeDirectoryAsync(IMAGE_CACHE_DIR, { intermediates: true });
-  await FileSystem.writeAsStringAsync(cachePath, JSON.stringify(result));
+  return user.getIdToken();
 }
 
 export const analyzeImage = async (
@@ -101,7 +72,7 @@ export const analyzeImage = async (
     }
 
     // console.log("Fetching new vision API result");
-    const apiKey = await getApiKey();
+    const idToken = await getIdToken();
     const compressedImageUri = await compressImage(imageUri);
     const base64Image = await getBase64FromUri(compressedImageUri);
     const body = JSON.stringify({
@@ -114,7 +85,7 @@ export const analyzeImage = async (
       body,
       headers: {
         "Content-Type": "application/json",
-        "X-API-Key": apiKey,
+        Authorization: `Bearer ${idToken}`,
       },
     });
 
