@@ -28,8 +28,7 @@ export default function SignIn() {
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
-        Constants.expoConfig?.extra?.googleWebClientId ||
-        process.env.WEB_CLIENT_ID,
+        Constants.expoConfig?.extra?.webClientId || process.env.WEB_CLIENT_ID,
     });
   }, []);
 
@@ -89,11 +88,15 @@ export default function SignIn() {
 
   const handleGoogleSignIn = async () => {
     try {
+      console.log("Starting Google Sign In");
       await GoogleSignin.hasPlayServices();
+      console.log("Google Play Services available");
       const response = await GoogleSignin.signIn();
+      console.log("Google Sign In response", response);
       if (isSuccessResponse(response)) {
         const { data } = response;
         const idToken = data?.idToken;
+        console.log("idToken", idToken);
         if (idToken) {
           const credential = GoogleAuthProvider.credential(idToken);
           const userCredential = await signInWithCredential(auth, credential);
@@ -102,6 +105,7 @@ export default function SignIn() {
         }
       }
     } catch (error: any) {
+      console.log("error", error);
       let errorMessage =
         "An error occurred during Google Sign In. Please try again.";
       if (error.code === "SIGN_IN_CANCELLED") {

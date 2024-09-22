@@ -33,6 +33,7 @@ export default ({ config }) => ({
       backgroundColor: "#FFFFFF",
     },
     package: "com.instalingo.app",
+    googleServicesFile: "./google-services.json",
     permissions: ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
   },
   web: {
