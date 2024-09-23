@@ -43,20 +43,26 @@ function RootLayoutNav() {
         router.replace("/(tabs)");
       }
 
-      // Add a delay before hiding the splash screen
+      // Request push notification permission and register token only when user is logged in
+      if (user) {
+        registerForPushNotificationsAsync()
+          .then((token) => {
+            if (token) {
+              console.log("Push notification token registered:", token);
+            }
+          })
+          .catch((error) => {
+            console.error("Error registering push notification:", error);
+          });
+      }
+
       const timer = setTimeout(() => {
         SplashScreen.hideAsync();
-      }, 2000); // Adjust this value (in milliseconds) to control how long the splash screen stays
+      }, 2000);
 
       return () => clearTimeout(timer);
     }
   }, [user, segments, isLoading]);
-
-  useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => {
-      console.log("Push notification token:", token);
-    });
-  }, []);
 
   useEffect(() => {
     const subscription = Notifications.addNotificationReceivedListener(
@@ -64,11 +70,11 @@ function RootLayoutNav() {
         console.log("Notification received:", notification);
 
         // Display an alert when a notification is received
-        Alert.alert(
-          notification.request.content.title ?? "New Notification",
-          notification.request.content.body ?? "No body",
-          [{ text: "OK", onPress: () => console.log("Alert closed") }]
-        );
+        // Alert.alert(
+        //   notification.request.content.title ?? "New Notification",
+        //   notification.request.content.body ?? "No body",
+        //   [{ text: "OK", onPress: () => console.log("Alert closed") }]
+        // );
       }
     );
 
