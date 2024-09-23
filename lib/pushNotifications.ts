@@ -1,6 +1,8 @@
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
+import { auth, db } from "@/firebase/config";
+import { doc, setDoc } from "firebase/firestore";
 
 // Configure how notifications should appear when the app is in the foreground
 Notifications.setNotificationHandler({
@@ -10,6 +12,18 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
+
+// Function to handle token updates
+async function updatePushToken(token: string) {
+  const user = auth.currentUser;
+  if (user) {
+    await setDoc(
+      doc(db, "users", user.uid),
+      { pushToken: token },
+      { merge: true }
+    );
+  }
+}
 
 // Function to register for push notifications
 export async function registerForPushNotificationsAsync() {
@@ -31,6 +45,7 @@ export async function registerForPushNotificationsAsync() {
     }
 
     token = (await Notifications.getExpoPushTokenAsync()).data;
+    await updatePushToken(token); // Update the token in your backend
   } else {
     alert("Must use physical device for Push Notifications");
   }
