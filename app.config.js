@@ -25,6 +25,7 @@ export default ({ config }) => ({
         "InstaLingo uses your camera to capture images of objects and text for instant translation. These images are processed locally and are not stored or shared without your consent.",
       NSPhotoLibraryUsageDescription:
         "InstaLingo accesses your photo library to allow you to select images for translation. Selected images are processed locally and are not stored or shared without your consent.",
+      UIBackgroundModes: ["fetch", "remote-notification"],
     },
   },
   android: {
@@ -34,7 +35,14 @@ export default ({ config }) => ({
     },
     package: "com.instalingo.app",
     googleServicesFile: "./google-services.json",
-    permissions: ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
+    permissions: [
+      "CAMERA",
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE",
+      "RECEIVE_BOOT_COMPLETED",
+      "VIBRATE",
+      "com.google.android.c2dm.permission.RECEIVE",
+    ],
   },
   web: {
     favicon: "./assets/images/favicon.png",

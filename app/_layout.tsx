@@ -7,9 +7,11 @@ import {
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
-import { useColorScheme } from "react-native";
+import { useColorScheme, Alert } from "react-native";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { useRouter, useSegments } from "expo-router";
+import { registerForPushNotificationsAsync } from "@/lib/pushNotifications";
+import * as Notifications from "expo-notifications";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -49,6 +51,29 @@ function RootLayoutNav() {
       return () => clearTimeout(timer);
     }
   }, [user, segments, isLoading]);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      console.log("Push notification token:", token);
+    });
+  }, []);
+
+  useEffect(() => {
+    const subscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log("Notification received:", notification);
+
+        // Display an alert when a notification is received
+        Alert.alert(
+          notification.request.content.title ?? "New Notification",
+          notification.request.content.body ?? "No body",
+          [{ text: "OK", onPress: () => console.log("Alert closed") }]
+        );
+      }
+    );
+
+    return () => subscription.remove();
+  }, []);
 
   if (isLoading) {
     return null; // or a loading indicator
