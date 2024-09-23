@@ -74,7 +74,7 @@ export default function HistoryScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#1B0112]">
+    <SafeAreaView className="flex-1 bg-white">
       <FlatList
         data={extractedTexts}
         renderItem={({ item }) => (
@@ -90,20 +90,20 @@ export default function HistoryScreen() {
                 },
               })
             }
-            className="border-b border-[#5A0834] p-4"
+            className="border-b border-gray-200 p-4"
           >
             <View className="flex-row justify-between items-start">
               <View className="flex-1 mr-4">
                 <Text
-                  className="text-[#E44EC3] text-base mb-2"
-                  numberOfLines={3}
+                  className="text-black text-base mb-2"
+                  numberOfLines={2}
                   ellipsizeMode="tail"
                 >
                   {item.originalText}
                 </Text>
                 <Text
-                  className="text-[#9D0B51] text-base"
-                  numberOfLines={3}
+                  className="text-gray-600 text-base"
+                  numberOfLines={2}
                   ellipsizeMode="tail"
                 >
                   {item.translatedText}
@@ -113,7 +113,7 @@ export default function HistoryScreen() {
                 <MaterialIcons
                   name="delete-outline"
                   size={24}
-                  color="#E44EC3"
+                  color="#007AFF"
                 />
               </TouchableOpacity>
             </View>
@@ -121,10 +121,14 @@ export default function HistoryScreen() {
         )}
         keyExtractor={(item) => item.id.toString()}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#007AFF"
+          />
         }
         ListEmptyComponent={
-          <Text className="text-center text-[#9D0B51] mt-4">
+          <Text className="text-center text-gray-500 mt-4">
             No saved phrases
           </Text>
         }

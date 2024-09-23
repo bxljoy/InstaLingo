@@ -23,15 +23,15 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "dark"].tabIconSelected,
-        tabBarInactiveTintColor: Colors[colorScheme ?? "dark"].tabIconDefault,
+        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarInactiveTintColor: Colors[colorScheme ?? "light"].tabIconDefault,
         tabBarStyle: {
-          backgroundColor: Colors[colorScheme ?? "dark"].background,
+          backgroundColor: Colors[colorScheme ?? "light"].background,
         },
         headerStyle: {
-          backgroundColor: Colors[colorScheme ?? "dark"].background,
+          backgroundColor: Colors[colorScheme ?? "light"].background,
         },
-        headerTintColor: Colors[colorScheme ?? "dark"].text,
+        headerTintColor: Colors[colorScheme ?? "light"].text,
         tabBarShowLabel: true,
       }}
     >

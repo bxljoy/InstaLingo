@@ -75,12 +75,12 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#1B0112]">
+    <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1 px-5 py-6">
-        <Text className="text-3xl font-bold text-[#E44EC3] text-center mb-2">
+        <Text className="text-3xl font-bold text-black text-center mb-2">
           InstaLingo
         </Text>
-        <Text className="text-lg text-[#9D0B51] text-center mb-6">
+        <Text className="text-lg text-gray-600 text-center mb-6">
           Convert your images to learning material
         </Text>
         {image ? (
@@ -89,21 +89,21 @@ export default function HomeScreen() {
             className="w-80 h-80 rounded-2xl self-center mb-6"
           />
         ) : (
-          <View className="w-80 h-80 bg-[#5A0834] rounded-2xl justify-center items-center self-center mb-6">
-            <MaterialIcons name="image" size={48} color="#E44EC3" />
-            <Text className="text-[#E44EC3] mt-2">No image selected</Text>
+          <View className="w-80 h-80 bg-gray-200 rounded-2xl justify-center items-center self-center mb-6">
+            <MaterialIcons name="image" size={48} color="#007AFF" />
+            <Text className="text-gray-600 mt-2">No image selected</Text>
           </View>
         )}
-        <View className="flex-row justify-around items-center w-full mt-6">
+        <View className="flex-row justify-around items-center w-full mt-6 rounded-xl bg-gray-200 p-4">
           <TouchableOpacity onPress={takePicture} className="items-center">
-            <MaterialIcons name="camera-alt" size={48} color="#E44EC3" />
-            <Text className="text-[#E44EC3] mt-1">Camera</Text>
+            <MaterialIcons name="camera-alt" size={48} color="#007AFF" />
+            <Text className="text-gray-600 mt-1">Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleExtractText}
             disabled={isExtracting || !image}
             className={`${
-              image ? "bg-[#9D0B51]" : "bg-[#5A0834]"
+              image ? "bg-blue-500" : "bg-gray-300"
             } rounded-full px-6 py-4 shadow-lg`}
           >
             <Text className="text-white font-bold text-lg text-center">
@@ -111,8 +111,8 @@ export default function HomeScreen() {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={pickImage} className="items-center">
-            <MaterialIcons name="photo" size={48} color="#E44EC3" />
-            <Text className="text-[#E44EC3] mt-1">Album</Text>
+            <MaterialIcons name="photo" size={48} color="#007AFF" />
+            <Text className="text-gray-600 mt-1">Album</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

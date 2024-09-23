@@ -117,33 +117,33 @@ export default function DetailScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#1B0112]">
+    <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1 px-4 py-6">
         {Platform.OS === "ios" && (
           <TouchableOpacity
             onPress={() => router.back()}
             className="flex flex-row items-center gap-2 mb-4"
           >
-            <FontAwesome name="arrow-left" size={24} color="#E44EC3" />
-            <Text className="text-lg text-[#E44EC3]">Back</Text>
+            <FontAwesome name="arrow-left" size={24} color="#007AFF" />
+            <Text className="text-lg text-blue-500">Back</Text>
           </TouchableOpacity>
         )}
-        <View className="bg-[#5A0834] rounded-lg p-4 mb-6 relative">
-          <View className="flex-row justify-between items-center mb-2 bg-[#5A0834]">
-            <Text className="text-lg text-[#E44EC3] ">Original Text:</Text>
+        <View className="bg-gray-100 rounded-lg p-4 mb-6 relative">
+          <View className="flex-row justify-between items-center mb-2 bg-gray-200 rounded-lg p-4">
+            <Text className="text-lg text-gray-800">Original Text:</Text>
             <TouchableOpacity
               onPress={() => copyToClipboard(text as string, setCopiedOriginal)}
-              className="bg-[#9D0B51] p-2 rounded-full"
+              className="bg-blue-500 p-2 rounded-full"
             >
               <MaterialIcons
                 name={copiedOriginal ? "check" : "content-copy"}
                 size={24}
-                color="#E44EC3"
+                color="#FFFFFF"
               />
             </TouchableOpacity>
           </View>
-          <Text className="text-white mb-8">{text}</Text>
-          <View className="absolute bottom-2 right-6 bg-[#5A0834]">
+          <Text className="text-gray-600 mb-8">{text}</Text>
+          <View className="absolute bottom-2 right-6 bg-gray-200 rounded-lg p-4">
             <TouchableOpacity
               onPress={() => pronounceText(text as string, "en-US", "original")}
               disabled={isBuffering}
@@ -153,46 +153,46 @@ export default function DetailScreen() {
                   playingText === "original" ? "stop-circle-o" : "play-circle-o"
                 }
                 size={32}
-                color={isBuffering ? "#999" : "#E44EC3"}
+                color={isBuffering ? "#999" : "#007AFF"}
               />
             </TouchableOpacity>
           </View>
         </View>
-        <View className="bg-[#5A0834] rounded-lg p-4 mb-6">
-          <Text className="text-lg text-[#E44EC3] mb-2">Playback Speed:</Text>
+        <View className="bg-gray-100 rounded-lg p-4 mb-6">
+          <Text className="text-lg text-gray-800 mb-2">Playback Speed:</Text>
           <Slider
             style={{ width: "100%", height: 40 }}
             minimumValue={0.5}
             maximumValue={2}
             value={playbackSpeed}
             onValueChange={handleSpeedChange}
-            minimumTrackTintColor="#E44EC3"
+            minimumTrackTintColor="#007AFF"
             maximumTrackTintColor="#000000"
-            thumbTintColor="#E44EC3"
+            thumbTintColor="#007AFF"
           />
-          <Text className="text-white text-center">
+          <Text className="text-gray-600 text-center">
             {playbackSpeed.toFixed(2)}x
           </Text>
         </View>
         {translatedText && (
-          <View className="bg-[#5A0834] rounded-lg p-4 relative mb-8">
-            <View className="flex-row justify-between items-center mb-2 bg-[#5A0834]">
-              <Text className="text-lg text-[#E44EC3]">Translated Text:</Text>
+          <View className="bg-gray-100 rounded-lg p-4 relative mb-8">
+            <View className="flex-row justify-between items-center mb-2 bg-gray-200 rounded-lg p-4">
+              <Text className="text-lg text-gray-800">Translated Text:</Text>
               <TouchableOpacity
                 onPress={() =>
                   copyToClipboard(translatedText as string, setCopiedTranslated)
                 }
-                className="bg-[#9D0B51] p-2 rounded-full"
+                className="bg-blue-500 p-2 rounded-full"
               >
                 <MaterialIcons
                   name={copiedTranslated ? "check" : "content-copy"}
                   size={24}
-                  color="#E44EC3"
+                  color="#FFFFFF"
                 />
               </TouchableOpacity>
             </View>
-            <Text className="text-white mb-8">{translatedText}</Text>
-            <View className="absolute bottom-2 right-6 bg-[#5A0834]">
+            <Text className="text-gray-600 mb-8">{translatedText}</Text>
+            <View className="absolute bottom-2 right-6 bg-gray-200 rounded-lg p-4">
               <TouchableOpacity
                 onPress={() =>
                   pronounceText(translatedText as string, "en-US", "translated")
@@ -206,14 +206,14 @@ export default function DetailScreen() {
                       : "play-circle-o"
                   }
                   size={32}
-                  color={isBuffering ? "#999" : "#E44EC3"}
+                  color={isBuffering ? "#999" : "#007AFF"}
                 />
               </TouchableOpacity>
             </View>
           </View>
         )}
       </ScrollView>
-      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+      <StatusBar style={Platform.OS === "ios" ? "dark" : "auto"} />
     </SafeAreaView>
   );
 }

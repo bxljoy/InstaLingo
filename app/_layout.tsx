@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   DarkTheme,
@@ -7,7 +7,7 @@ import {
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
-import { useColorScheme, Alert } from "react-native";
+import { useColorScheme } from "react-native";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { useRouter, useSegments } from "expo-router";
 import { registerForPushNotificationsAsync } from "@/lib/pushNotifications";
@@ -31,6 +31,8 @@ function RootLayoutNav() {
   const { user, isLoading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const [isNotificationRegistered, setIsNotificationRegistered] =
+    useState(false);
 
   useEffect(() => {
     if (!isLoading) {
@@ -43,12 +45,13 @@ function RootLayoutNav() {
         router.replace("/(tabs)");
       }
 
-      // Request push notification permission and register token only when user is logged in
-      if (user) {
+      // Request push notification permission and register token only when user is logged in and it hasn't been done yet
+      if (user && !isNotificationRegistered) {
         registerForPushNotificationsAsync()
           .then((token) => {
             if (token) {
               console.log("Push notification token registered:", token);
+              setIsNotificationRegistered(true);
             }
           })
           .catch((error) => {
@@ -58,23 +61,16 @@ function RootLayoutNav() {
 
       const timer = setTimeout(() => {
         SplashScreen.hideAsync();
-      }, 2000);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }
-  }, [user, segments, isLoading]);
+  }, [user, segments, isLoading, isNotificationRegistered]);
 
   useEffect(() => {
     const subscription = Notifications.addNotificationReceivedListener(
       (notification) => {
         console.log("Notification received:", notification);
-
-        // Display an alert when a notification is received
-        // Alert.alert(
-        //   notification.request.content.title ?? "New Notification",
-        //   notification.request.content.body ?? "No body",
-        //   [{ text: "OK", onPress: () => console.log("Alert closed") }]
-        // );
       }
     );
 

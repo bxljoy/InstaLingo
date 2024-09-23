@@ -65,41 +65,41 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#1B0112] p-4">
-      <Text className="text-[#E44EC3] text-2xl font-bold mb-6">Profile</Text>
+    <View className="flex-1 bg-white p-4">
+      <Text className="text-2xl font-bold text-black mb-6">Profile</Text>
       {user && (
         <View className="mb-6">
-          <Text className="text-[#E44EC3] text-lg">Email: {user.email}</Text>
+          <Text className="text-lg text-gray-600">Email: {user.email}</Text>
         </View>
       )}
       <TouchableOpacity
-        className="bg-[#9D0B51] p-4 rounded-lg mb-4"
+        className="bg-blue-500 p-4 rounded-lg mb-4"
         onPress={() => router.push("/privacy-settings")}
       >
-        <Text className="text-white text-center font-bold">
+        <Text className="text-white text-center font-semibold">
           Privacy Settings
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        className="bg-[#9D0B51] p-4 rounded-lg mb-4"
+        className="bg-blue-500 p-4 rounded-lg mb-4"
         onPress={handleLogOut}
         disabled={isLoggingOut}
       >
         {isLoggingOut ? (
-          <ActivityIndicator color="#E44EC3" />
+          <ActivityIndicator color="#FFFFFF" />
         ) : (
-          <Text className="text-white text-center font-bold">Log Out</Text>
+          <Text className="text-white text-center font-semibold">Log Out</Text>
         )}
       </TouchableOpacity>
       <TouchableOpacity
-        className="bg-[#9D0B51] p-4 rounded-lg"
+        className="bg-red-500 p-4 rounded-lg"
         onPress={handleDeleteAccount}
         disabled={isDeleting}
       >
         {isDeleting ? (
-          <ActivityIndicator color="#E44EC3" />
+          <ActivityIndicator color="#FFFFFF" />
         ) : (
-          <Text className="text-white text-center font-bold">
+          <Text className="text-white text-center font-semibold">
             Delete Account
           </Text>
         )}

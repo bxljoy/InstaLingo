@@ -196,57 +196,57 @@ export default function SignIn() {
   // };
 
   return (
-    <View className="flex-1 justify-center items-center bg-[#1B0112] p-8">
-      <Text className="text-3xl font-bold text-[#E44EC3] mb-8">Sign In</Text>
+    <View className="flex-1 justify-center items-center bg-white p-6">
+      <Text className="text-3xl font-bold text-black mb-8">Sign In</Text>
       <TextInput
-        className="w-full bg-[#5A0834] text-white p-4 rounded-lg mb-4"
+        className="w-full bg-gray-100 text-black p-3 rounded-lg mb-4"
         placeholder="Email"
-        placeholderTextColor="#9D0B51"
+        placeholderTextColor="#999"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
       />
       <TextInput
-        className="w-full bg-[#5A0834] text-white p-4 rounded-lg mb-6"
+        className="w-full bg-gray-100 text-black p-3 rounded-lg mb-6"
         placeholder="Password"
-        placeholderTextColor="#9D0B51"
+        placeholderTextColor="#999"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
       <TouchableOpacity
-        className="w-full bg-[#E44EC3] p-4 rounded-lg mb-4"
+        className="w-full bg-blue-500 p-3 rounded-lg mb-4"
         onPress={handleSignIn}
       >
-        <Text className="text-white text-center font-bold">Sign In</Text>
+        <Text className="text-white text-center font-semibold">Sign In</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        className="w-full bg-white p-4 rounded-lg mb-4 flex-row justify-center items-center"
+        className="w-full border border-blue-500 p-3 rounded-lg mb-4 flex-row justify-center items-center"
         onPress={handleGoogleSignIn}
       >
         <AntDesign
           name="google"
-          size={24}
+          size={20}
           color="#4285F4"
-          style={{ marginRight: 10 }}
+          style={{ marginRight: 8 }}
         />
-        <Text className="text-[#4285F4] text-center font-bold">
+        <Text className="text-blue-500 text-center font-semibold">
           Sign in with Google
         </Text>
       </TouchableOpacity>
       {Platform.OS === "ios" && (
         <TouchableOpacity
-          className="w-full bg-white p-4 rounded-lg mb-4 flex-row justify-center items-center"
+          className="w-full border border-blue-500 p-3 rounded-lg mb-4 flex-row justify-center items-center"
           onPress={handleAppleSignIn}
         >
           <AntDesign
             name="apple1"
-            size={24}
-            color="black"
-            style={{ marginRight: 10 }}
+            size={20}
+            color="#000"
+            style={{ marginRight: 8 }}
           />
-          <Text className="text-black text-center font-bold">
+          <Text className="text-blue-500 text-center font-semibold">
             Sign in with Apple
           </Text>
         </TouchableOpacity>
@@ -255,7 +255,7 @@ export default function SignIn() {
         onPress={() => router.replace("/sign-up")}
         className="mt-4"
       >
-        <Text className="text-[#E44EC3]">Don't have an account? Sign Up</Text>
+        <Text className="text-blue-500">Don't have an account? Sign Up</Text>
       </TouchableOpacity>
       {/* <TouchableOpacity
         className="w-full bg-red-500 p-4 rounded-lg mt-4"

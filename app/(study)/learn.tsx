@@ -94,34 +94,34 @@ export default function LearnScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#1B0112]">
+    <View className="flex-1 bg-white">
       <ScrollView className="flex-1">
-        <View className="bg-[#5A0834] rounded-t-3xl p-6 mt-6">
+        <View className="bg-gray-100 rounded-t-3xl p-6 mt-6">
           <TouchableOpacity
             onPress={() => router.back()}
             className="flex flex-row items-center gap-2 mb-4"
           >
-            <FontAwesome name="arrow-left" size={24} color="#E44EC3" />
-            <Text className="text-lg text-[#E44EC3]">Back</Text>
+            <FontAwesome name="arrow-left" size={24} color="#007AFF" />
+            <Text className="text-lg text-blue-500">Back</Text>
           </TouchableOpacity>
           <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-[#E44EC3] text-lg font-bold">
+            <Text className="text-gray-800 text-lg font-bold">
               Extracted Text:
             </Text>
             <TouchableOpacity
               onPress={() =>
                 copyToClipboard(extractedText as string, setCopiedExtracted)
               }
-              className="bg-[#9D0B51] p-2 rounded-full"
+              className="bg-blue-500 p-2 rounded-full"
             >
               <MaterialIcons
                 name={copiedExtracted ? "check" : "content-copy"}
                 size={24}
-                color="#E44EC3"
+                color="#FFFFFF"
               />
             </TouchableOpacity>
           </View>
-          <Text className="text-white text-sm p-4 bg-[#9D0B51] rounded-md mb-6">
+          <Text className="text-gray-800 text-sm p-4 bg-gray-100 rounded-md mb-6">
             {extractedText}
           </Text>
 
@@ -142,9 +142,9 @@ export default function LearnScreen() {
                   paddingVertical: 12,
                   paddingHorizontal: 10,
                   borderWidth: 1,
-                  borderColor: "#E44EC3",
+                  borderColor: "#007AFF",
                   borderRadius: 8,
-                  color: "#E44EC3",
+                  color: "#007AFF",
                   paddingRight: 30,
                 },
                 inputAndroid: {
@@ -152,9 +152,9 @@ export default function LearnScreen() {
                   paddingHorizontal: 10,
                   paddingVertical: 8,
                   borderWidth: 1,
-                  borderColor: "#E44EC3",
+                  borderColor: "#007AFF",
                   borderRadius: 8,
-                  color: "#E44EC3",
+                  color: "#007AFF",
                   paddingRight: 30,
                 },
               }}
@@ -162,8 +162,8 @@ export default function LearnScreen() {
                 return (
                   <MaterialIcons
                     name="arrow-drop-down"
-                    size={48}
-                    color="#E44EC3"
+                    size={24}
+                    color="#007AFF"
                   />
                 );
               }}
@@ -172,7 +172,7 @@ export default function LearnScreen() {
 
           <TouchableOpacity
             onPress={handleTranslate}
-            className="bg-[#9D0B51] p-4 rounded-full mb-6"
+            className="bg-blue-500 p-4 rounded-full mb-6"
           >
             <Text className="text-white text-center font-bold">Translate</Text>
           </TouchableOpacity>
@@ -180,7 +180,7 @@ export default function LearnScreen() {
           {translatedEntity && (
             <View className="mb-6">
               <View className="flex-row justify-between items-center mb-2">
-                <Text className="text-[#E44EC3] text-lg font-bold">
+                <Text className="text-gray-800 text-lg font-bold">
                   Translated Text:
                 </Text>
                 <TouchableOpacity
@@ -190,16 +190,16 @@ export default function LearnScreen() {
                       setCopiedTranslated
                     )
                   }
-                  className="bg-[#9D0B51] p-2 rounded-full"
+                  className="bg-blue-500 p-2 rounded-full"
                 >
                   <MaterialIcons
                     name={copiedTranslated ? "check" : "content-copy"}
                     size={24}
-                    color="#E44EC3"
+                    color="#FFFFFF"
                   />
                 </TouchableOpacity>
               </View>
-              <Text className="text-white text-sm p-4 bg-[#9D0B51] rounded-md">
+              <Text className="text-gray-800 text-sm p-4 bg-gray-100 rounded-md">
                 {translatedEntity.translatedText}
               </Text>
             </View>
@@ -209,7 +209,7 @@ export default function LearnScreen() {
             <TouchableOpacity
               onPress={onSave}
               disabled={isSaving}
-              className="bg-[#E44EC3] p-4 rounded-full flex-1 ml-2"
+              className="bg-blue-500 p-4 rounded-full flex-1 ml-2"
             >
               <Text className="text-white text-center font-bold">
                 {isSaving ? "Saving..." : "Save"}
@@ -221,8 +221,8 @@ export default function LearnScreen() {
 
       {bannerVisible && (
         <View className="absolute inset-x-0 bottom-1/2 items-center">
-          <View className="bg-[#E44EC3] px-4 py-2 rounded-full">
-            <Text className="text-white text-center font-bold">
+          <View className="bg-blue-500 px-4 py-2 rounded-full">
+            <Text className="text-white text-center font-semibold">
               Saved Successfully!
             </Text>
           </View>

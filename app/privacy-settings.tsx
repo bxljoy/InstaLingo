@@ -43,15 +43,17 @@ export default function PrivacySettingsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Privacy Settings</Text>
-      <View style={styles.settingContainer}>
-        <Text style={styles.text}>Allow Data Collection</Text>
+    <View className="flex-1 bg-white p-4">
+      <Text className="text-2xl font-bold text-black mb-6">
+        Privacy Settings
+      </Text>
+      <View className="flex-row justify-between items-center mb-4">
+        <Text className="text-lg text-gray-600">Allow Data Collection</Text>
         <Switch
           value={dataCollection}
           onValueChange={toggleDataCollection}
-          trackColor={{ false: "#767577", true: "#E44EC3" }}
-          thumbColor={dataCollection ? "#9D0B51" : "#f4f3f4"}
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={dataCollection ? "#007AFF" : "#f4f3f4"}
         />
       </View>
     </View>
