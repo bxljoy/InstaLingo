@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,15 +8,39 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { auth, db } from "@/firebase/config";
-import { deleteUser, signOut } from "firebase/auth";
+import {
+  deleteUser,
+  signOut,
+  sendEmailVerification,
+  reload,
+} from "firebase/auth";
 import { doc, deleteDoc } from "firebase/firestore";
 import { clearExtractedTexts } from "@/lib/db";
 
 export default function ProfileScreen() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const router = useRouter();
   const user = auth.currentUser;
+
+  useEffect(() => {
+    const checkEmailVerification = async () => {
+      if (user) {
+        await reload(user);
+        setIsEmailVerified(user.emailVerified);
+      }
+    };
+
+    checkEmailVerification();
+
+    // Set up an interval to check periodically
+    const intervalId = setInterval(checkEmailVerification, 5000); // Check every 5 seconds
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [user]);
 
   const handleLogOut = async () => {
     setIsLoggingOut(true);
@@ -64,12 +88,52 @@ export default function ProfileScreen() {
     }
   };
 
+  const handleVerifyEmail = async () => {
+    if (user && !isEmailVerified) {
+      setIsVerifying(true);
+      try {
+        await sendEmailVerification(user);
+        Alert.alert(
+          "Verification Email Sent",
+          "Please check your inbox and verify your email."
+        );
+      } catch (error) {
+        console.error("Error sending verification email:", error);
+        Alert.alert(
+          "Error",
+          "Failed to send verification email. Please try again later."
+        );
+      } finally {
+        setIsVerifying(false);
+      }
+    }
+  };
+
   return (
     <View className="flex-1 bg-white p-4">
       <Text className="text-2xl font-bold text-black mb-6">Profile</Text>
       {user && (
         <View className="mb-6">
-          <Text className="text-lg text-gray-600">Email: {user.email}</Text>
+          <View className="flex-row items-center justify-between">
+            <Text className="text-lg text-gray-600">Email: {user.email}</Text>
+            {isEmailVerified ? (
+              <Text className="text-sm text-green-500">Verified</Text>
+            ) : (
+              <TouchableOpacity
+                onPress={handleVerifyEmail}
+                disabled={isVerifying}
+              >
+                <Text className="text-sm text-red-500">
+                  {isVerifying ? "Sending..." : "Not Verified"}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          {!isEmailVerified && (
+            <Text className="text-sm text-gray-500 mt-1">
+              Tap "Not Verified" to resend verification email
+            </Text>
+          )}
         </View>
       )}
       <TouchableOpacity
