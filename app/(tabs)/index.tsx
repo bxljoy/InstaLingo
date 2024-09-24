@@ -83,17 +83,19 @@ export default function HomeScreen() {
         <Text className="text-lg text-gray-600 text-center mb-6">
           Convert your images to learning material
         </Text>
-        {image ? (
-          <Image
-            source={{ uri: image }}
-            className="w-80 h-80 rounded-2xl self-center mb-6"
-          />
-        ) : (
-          <View className="w-80 h-80 bg-gray-200 rounded-2xl justify-center items-center self-center mb-6">
-            <MaterialIcons name="image" size={48} color="#007AFF" />
-            <Text className="text-gray-600 mt-2">No image selected</Text>
-          </View>
-        )}
+        <TouchableOpacity onPress={pickImage} activeOpacity={0.7}>
+          {image ? (
+            <Image
+              source={{ uri: image }}
+              className="w-80 h-80 rounded-2xl self-center mb-6"
+            />
+          ) : (
+            <View className="w-80 h-80 bg-gray-200 rounded-2xl justify-center items-center self-center mb-6">
+              <MaterialIcons name="image" size={48} color="#007AFF" />
+              <Text className="text-gray-600 mt-2">Tap to select image</Text>
+            </View>
+          )}
+        </TouchableOpacity>
         <View className="flex-row justify-around items-center w-full mt-6 rounded-xl bg-gray-200 p-4">
           <TouchableOpacity onPress={takePicture} className="items-center">
             <MaterialIcons name="camera-alt" size={48} color="#007AFF" />
@@ -104,7 +106,7 @@ export default function HomeScreen() {
             disabled={isExtracting || !image}
             className={`${
               image ? "bg-blue-500" : "bg-gray-300"
-            } rounded-full px-6 py-4 shadow-lg`}
+            } rounded-full px-6 py-4`}
           >
             <Text className="text-white font-bold text-lg text-center">
               {isExtracting ? "Extracting..." : "Extract Text"}
