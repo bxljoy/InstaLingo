@@ -13,6 +13,7 @@ import {
   OAuthProvider,
   User,
   signOut,
+  sendEmailVerification,
 } from "firebase/auth";
 import { auth, db } from "../../firebase/config";
 import { useRouter } from "expo-router";
@@ -74,7 +75,33 @@ export default function SignIn() {
         email,
         password
       );
-      await initializeApiUsage(userCredential.user);
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
+        Alert.alert(
+          "Email Not Verified",
+          "Please verify your email before signing in. Would you like us to send another verification email?",
+          [
+            {
+              text: "Yes, send email",
+              onPress: async () => {
+                await sendEmailVerification(user);
+                Alert.alert(
+                  "Verification Email Sent",
+                  "Please check your inbox and verify your email."
+                );
+              },
+            },
+            {
+              text: "No, thanks",
+              style: "cancel",
+            },
+          ]
+        );
+        return;
+      }
+
+      await initializeApiUsage(user);
       router.replace("/(tabs)");
     } catch (error: any) {
       let errorMessage = "An error occurred during sign in. Please try again.";

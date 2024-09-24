@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Text } from "@/components/Themed";
-import { createUserWithEmailAndPassword, User } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  User,
+  sendEmailVerification,
+} from "firebase/auth";
 import { auth, db } from "../../firebase/config";
 import { useRouter } from "expo-router";
 import { doc, setDoc, getDoc } from "firebase/firestore";
@@ -38,7 +42,15 @@ export default function SignUp() {
         password
       );
       await initializeApiUsage(userCredential.user);
-      router.replace("/(tabs)");
+
+      // Send email verification
+      await sendEmailVerification(userCredential.user);
+
+      Alert.alert(
+        "Verification Email Sent",
+        "Please check your email to verify your account. You won't be able to sign in until your email is verified.",
+        [{ text: "OK", onPress: () => router.replace("/sign-in") }]
+      );
     } catch (error: any) {
       let errorMessage = "An error occurred during sign up. Please try again.";
 
@@ -56,41 +68,45 @@ export default function SignUp() {
   };
 
   return (
-    <View className="flex-1 justify-center items-center bg-[#1B0112] p-8">
-      <Text className="text-3xl font-bold text-[#E44EC3] mb-8">Sign Up</Text>
+    <View className="flex-1 justify-center items-center bg-gray-100 p-6">
+      <Text className="text-3xl font-bold text-black mb-8">Sign Up</Text>
       <TextInput
-        className="w-full bg-[#5A0834] text-white p-4 rounded-lg mb-4"
+        className="w-full bg-white text-black p-4 rounded-lg mb-4 border border-gray-300"
         placeholder="Email"
-        placeholderTextColor="#9D0B51"
+        placeholderTextColor="#999"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
       />
       <TextInput
-        className="w-full bg-[#5A0834] text-white p-4 rounded-lg mb-4"
+        className="w-full bg-white text-black p-4 rounded-lg mb-4 border border-gray-300"
         placeholder="Password"
-        placeholderTextColor="#9D0B51"
+        placeholderTextColor="#999"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
       <TextInput
-        className="w-full bg-[#5A0834] text-white p-4 rounded-lg mb-6"
+        className="w-full bg-white text-black p-4 rounded-lg mb-6 border border-gray-300"
         placeholder="Confirm Password"
-        placeholderTextColor="#9D0B51"
+        placeholderTextColor="#999"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
       />
       <TouchableOpacity
-        className="w-full bg-[#E44EC3] p-4 rounded-lg mb-4"
+        className="w-full bg-blue-500 p-4 rounded-lg mb-4"
         onPress={handleSignUp}
       >
-        <Text className="text-white text-center font-bold">Sign Up</Text>
+        <Text className="text-white text-center font-bold text-lg">
+          Sign Up
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.replace("/sign-in")}>
-        <Text className="text-[#E44EC3]">Already have an account? Sign In</Text>
+        <Text className="text-blue-500 text-base">
+          Already have an account? Sign In
+        </Text>
       </TouchableOpacity>
     </View>
   );
