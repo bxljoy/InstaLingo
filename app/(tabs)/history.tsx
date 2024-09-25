@@ -9,10 +9,18 @@ import {
   Alert,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
-import { getExtractedTexts, deleteExtractedText, initDatabase } from "@/lib/db";
+import {
+  getExtractedTexts,
+  deleteExtractedText,
+  initDatabase,
+  isCloudSyncEnabled,
+  deleteExtractedTextFromCloud,
+} from "@/lib/db";
 import { ExtractedText } from "@/types/definitions";
 import { MaterialIcons } from "@expo/vector-icons";
 import { auth } from "@/firebase/config";
+import { collection, query, getDocs, orderBy } from "firebase/firestore";
+import { db as firestoreDb } from "@/firebase/config";
 
 export default function HistoryScreen() {
   const [extractedTexts, setExtractedTexts] = useState<ExtractedText[]>([]);
@@ -23,8 +31,45 @@ export default function HistoryScreen() {
   const loadExtractedTexts = useCallback(async () => {
     if (userId) {
       try {
-        const texts = await getExtractedTexts(userId);
-        setExtractedTexts(texts);
+        // Fetch from local SQLite
+        const localTexts = await getExtractedTexts(userId);
+
+        // Check if Cloud Sync is enabled
+        const cloudSyncEnabled = await isCloudSyncEnabled(userId);
+
+        if (cloudSyncEnabled) {
+          // Fetch from Firestore
+          const extractedTextsRef = collection(
+            firestoreDb,
+            "users",
+            userId,
+            "extractedTexts"
+          );
+          const q = query(extractedTextsRef, orderBy("timestamp", "desc"));
+          const querySnapshot = await getDocs(q);
+          const cloudTexts = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          // Merge local and cloud data, removing duplicates
+          const mergedTexts = [...localTexts, ...cloudTexts].reduce<
+            (ExtractedText | { id: string })[]
+          >((acc, current) => {
+            const x = acc.find(
+              (item) => "id" in item && item.id === current.id
+            );
+            if (!x) {
+              return acc.concat([current]);
+            } else {
+              return acc;
+            }
+          }, []);
+
+          setExtractedTexts(mergedTexts as ExtractedText[]);
+        } else {
+          setExtractedTexts(localTexts);
+        }
       } catch (error) {
         console.error("Error loading extracted texts:", error);
       }
@@ -51,7 +96,7 @@ export default function HistoryScreen() {
   );
 
   const handleDelete = useCallback(
-    (id: number) => {
+    (id: string | number) => {
       Alert.alert("Delete Item", "Are you sure you want to delete this item?", [
         { text: "Cancel", style: "cancel" },
         {
@@ -60,10 +105,20 @@ export default function HistoryScreen() {
           onPress: async () => {
             if (userId) {
               try {
+                // Delete from local database
                 await deleteExtractedText(userId, id);
+
+                // Delete from cloud (Firestore)
+                await deleteExtractedTextFromCloud(userId, id);
+
+                // Reload data
                 await loadExtractedTexts();
               } catch (error) {
                 console.error("Error deleting item:", error);
+                Alert.alert(
+                  "Error",
+                  "Failed to delete item. Please try again."
+                );
               }
             }
           },
