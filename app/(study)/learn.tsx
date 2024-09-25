@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import * as Clipboard from "expo-clipboard";
@@ -24,6 +24,7 @@ export default function LearnScreen() {
   const [copiedExtracted, setCopiedExtracted] = useState(false);
   const [copiedTranslated, setCopiedTranslated] = useState(false);
   const router = useRouter();
+  const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     (async () => {
@@ -87,6 +88,10 @@ export default function LearnScreen() {
           translateText(extractedText as string, targetLanguage)
         );
         setTranslatedEntity(translatedEntity);
+        // Scroll to the bottom after translation is complete
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 100);
       } catch (error) {
         console.error("Error translating text:", error);
       }
@@ -95,7 +100,7 @@ export default function LearnScreen() {
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView className="flex-1">
+      <ScrollView className="flex-1" ref={scrollViewRef}>
         <View className="bg-gray-100 rounded-t-3xl p-6 mt-6">
           <TouchableOpacity
             onPress={() => router.back()}
