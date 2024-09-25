@@ -50,8 +50,13 @@ function RootLayoutNav() {
         registerForPushNotificationsAsync()
           .then((token) => {
             if (token) {
-              console.log("Push notification token registered:", token);
+              console.log(
+                "Push notification token registered successfully:",
+                token
+              );
               setIsNotificationRegistered(true);
+            } else {
+              console.log("Failed to obtain push token");
             }
           })
           .catch((error) => {
