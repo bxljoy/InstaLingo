@@ -99,7 +99,10 @@ export default function SignUp() {
         className="w-full bg-blue-500 p-4 rounded-lg mb-4"
         onPress={handleSignUp}
       >
-        <Text className="text-white text-center font-bold text-lg">
+        <Text
+          className="text-white text-center font-bold text-lg"
+          testID="sign-up-button"
+        >
           Sign Up
         </Text>
       </TouchableOpacity>

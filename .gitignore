@@ -51,3 +51,11 @@ instalingo-release-key.keystore
 
 # cursorrules
 .cursorrules
+
+# jest
+jest.config.js
+tsconfig.jest.json
+jest.setup.js
+
+# jest coverage
+coverage/

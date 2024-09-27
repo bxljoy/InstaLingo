@@ -110,6 +110,7 @@ export default function PrivacySettingsScreen() {
           onValueChange={toggleDataCollection}
           trackColor={{ false: "#767577", true: "#81b0ff" }}
           thumbColor={dataCollection ? "#007AFF" : "#f4f3f4"}
+          testID="cloud-sync-toggle"
         />
       </View>
       <Text className="text-sm text-gray-500 mt-2">

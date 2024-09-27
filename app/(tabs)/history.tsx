@@ -164,7 +164,10 @@ export default function HistoryScreen() {
                   {item.translatedText}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => handleDelete(item.id)}>
+              <TouchableOpacity
+                onPress={() => handleDelete(item.id)}
+                testID={`delete-button-${item.id}`}
+              >
                 <MaterialIcons
                   name="delete-outline"
                   size={24}

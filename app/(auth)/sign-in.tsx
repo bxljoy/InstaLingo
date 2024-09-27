@@ -246,7 +246,12 @@ export default function SignIn() {
         className="w-full bg-blue-500 p-3 rounded-lg mb-4"
         onPress={handleSignIn}
       >
-        <Text className="text-white text-center font-semibold">Sign In</Text>
+        <Text
+          className="text-white text-center font-semibold"
+          testID="sign-in-button"
+        >
+          Sign In
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         className="w-full border border-blue-500 p-3 rounded-lg mb-4 flex-row justify-center items-center"
