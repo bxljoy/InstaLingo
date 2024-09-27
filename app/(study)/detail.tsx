@@ -143,7 +143,7 @@ export default function DetailScreen() {
             </TouchableOpacity>
           </View>
           <Text className="text-gray-600 mb-8">{text}</Text>
-          <View className="absolute bottom-2 right-6 bg-gray-200 rounded-lg p-4">
+          <View className="absolute bottom-2 right-6 bg-gray-200 rounded-lg">
             <TouchableOpacity
               onPress={() => pronounceText(text as string, "en-US", "original")}
               disabled={isBuffering}
@@ -192,7 +192,7 @@ export default function DetailScreen() {
               </TouchableOpacity>
             </View>
             <Text className="text-gray-600 mb-8">{translatedText}</Text>
-            <View className="absolute bottom-2 right-6 bg-gray-200 rounded-lg p-4">
+            <View className="absolute bottom-2 right-6 bg-gray-200 rounded-lg">
               <TouchableOpacity
                 onPress={() =>
                   pronounceText(translatedText as string, "en-US", "translated")
