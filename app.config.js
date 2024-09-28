@@ -27,6 +27,7 @@ export default ({ config }) => ({
         "InstaLingo accesses your photo library to allow you to select images for translation. Selected images are processed locally and are not stored or shared without your consent.",
       UIBackgroundModes: ["fetch", "remote-notification"],
     },
+    appStoreId: "6680142408",
   },
   android: {
     adaptiveIcon: {

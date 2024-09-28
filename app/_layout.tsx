@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   DarkTheme,
@@ -12,6 +12,8 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { useRouter, useSegments } from "expo-router";
 import { registerForPushNotificationsAsync } from "@/lib/pushNotifications";
 import * as Notifications from "expo-notifications";
+import { auth, db } from "@/firebase/config";
+import { doc, getDoc, setDoc, increment } from "firebase/firestore";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -33,6 +35,27 @@ function RootLayoutNav() {
   const router = useRouter();
   const [isNotificationRegistered, setIsNotificationRegistered] =
     useState(false);
+
+  const incrementAppUsage = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      await setDoc(
+        userDocRef,
+        { appUsageCount: increment(1) },
+        { merge: true }
+      );
+    } catch (error) {
+      console.error("Error incrementing app usage count:", error);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      incrementAppUsage();
+    }
+  }, [user, incrementAppUsage]);
 
   useEffect(() => {
     if (!isLoading) {

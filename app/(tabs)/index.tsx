@@ -8,6 +8,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { apiWrapper } from "@/lib/apiWrapper";
+import ReviewPrompt from "@/components/ReviewPrompt";
 
 export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState(false);
@@ -118,6 +119,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <ReviewPrompt />
     </SafeAreaView>
   );
 }
