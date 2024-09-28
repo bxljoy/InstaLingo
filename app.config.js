@@ -19,7 +19,8 @@ export default ({ config }) => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.instalingo.app",
-    googleServicesFile: "./GoogleService-Info.plist",
+    // googleServicesFile: "./GoogleService-Info.plist",
+    googleServicesFile: process.env.GOOGLE_SERVICES_PLIST,
     infoPlist: {
       NSCameraUsageDescription:
         "InstaLingo uses your camera to capture images of objects and text for instant translation. These images are processed locally and are not stored or shared without your consent.",
@@ -35,7 +36,8 @@ export default ({ config }) => ({
       backgroundColor: "#FFFFFF",
     },
     package: "com.instalingo.app",
-    googleServicesFile: "./google-services.json",
+    // googleServicesFile: "./google-services.json",
+    googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
     permissions: [
       "CAMERA",
       "READ_EXTERNAL_STORAGE",

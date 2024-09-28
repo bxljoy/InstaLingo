@@ -13,7 +13,7 @@ import { useRouter, useSegments } from "expo-router";
 import { registerForPushNotificationsAsync } from "@/lib/pushNotifications";
 import * as Notifications from "expo-notifications";
 import { auth, db } from "@/firebase/config";
-import { doc, getDoc, setDoc, increment } from "firebase/firestore";
+import { doc, updateDoc, increment } from "firebase/firestore";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -41,11 +41,9 @@ function RootLayoutNav() {
 
     try {
       const userDocRef = doc(db, "users", user.uid);
-      await setDoc(
-        userDocRef,
-        { appUsageCount: increment(1) },
-        { merge: true }
-      );
+      await updateDoc(userDocRef, {
+        appUsageCount: increment(1),
+      });
     } catch (error) {
       console.error("Error incrementing app usage count:", error);
     }

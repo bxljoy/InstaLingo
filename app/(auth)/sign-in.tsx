@@ -24,7 +24,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { GoogleAuthProvider } from "firebase/auth";
 import Constants from "expo-constants";
-import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import * as AppleAuthentication from "expo-apple-authentication";
 
 export default function SignIn() {
@@ -45,22 +45,31 @@ export default function SignIn() {
 
     if (!userDoc.exists()) {
       // New user, initialize API usage
+      // console.log("New user, initializing API usage");
       await setDoc(userDocRef, {
         apiCalls: 0,
         lastResetDate: new Date().toISOString(),
+        appUsageCount: 1,
       });
     } else {
       // Existing user, check if we need to reset the counter
+      // console.log("Existing user, checking if we need to reset the counter");
       const userData = userDoc.data();
-      const lastResetDate = new Date(userData.lastResetDate);
+      // console.log("userData", userData);
+
+      const lastResetDate = userData.lastResetDate
+        ? new Date(userData.lastResetDate)
+        : null;
       const now = new Date();
 
       if (
+        !lastResetDate ||
         now.getMonth() !== lastResetDate.getMonth() ||
         now.getFullYear() !== lastResetDate.getFullYear()
       ) {
-        // Reset counter if it's a new month
-        await setDoc(userDocRef, {
+        // Reset counter if it's a new month or if lastResetDate doesn't exist
+        // console.log("Resetting counter");
+        await updateDoc(userDocRef, {
           apiCalls: 0,
           lastResetDate: now.toISOString(),
         });
@@ -98,7 +107,6 @@ export default function SignIn() {
             },
           ]
         );
-        return;
       }
 
       await initializeApiUsage(user);
