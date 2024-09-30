@@ -3,31 +3,16 @@ import { View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Text } from "@/components/Themed";
 import {
   createUserWithEmailAndPassword,
-  User,
   sendEmailVerification,
 } from "firebase/auth";
-import { auth, db } from "../../firebase/config";
+import { auth } from "../../firebase/config";
 import { useRouter } from "expo-router";
-import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
-
-  const initializeApiUsage = async (user: User) => {
-    const userDocRef = doc(db, "users", user.uid);
-    const userDoc = await getDoc(userDocRef);
-
-    if (!userDoc.exists()) {
-      // New user, initialize API usage
-      await setDoc(userDocRef, {
-        apiCalls: 0,
-        lastResetDate: new Date().toISOString(),
-      });
-    }
-  };
 
   const handleSignUp = async () => {
     if (password !== confirmPassword) {
@@ -41,7 +26,6 @@ export default function SignUp() {
         email,
         password
       );
-      await initializeApiUsage(userCredential.user);
 
       // Send email verification
       await sendEmailVerification(userCredential.user);

@@ -19,12 +19,9 @@ export async function apiWrapper(apiCall: () => Promise<any>) {
     // Check if user has exceeded limit
     const userDoc = await getDoc(userDocRef);
     const userData = userDoc.data();
-    if (userData && userData.apiCalls > 1000) {
-      // Assuming a limit of 1000 calls
+    if (userData && userData.apiCalls > 50) {
+      // Updated limit to 50 calls
       Alert.alert("API call limit exceeded", "Please try again later");
-      await updateDoc(userDocRef, {
-        apiCalls: increment(-1),
-      });
       return null; // Return null instead of throwing an error
     }
 
@@ -61,9 +58,6 @@ export async function geminiApiWrapper(apiCall: () => Promise<any>) {
     if (userData && userData.geminiApiCalls > 5) {
       // Assuming a limit of 5 Gemini calls
       Alert.alert("AI call limit exceeded", "Please try again later");
-      await updateDoc(userDocRef, {
-        geminiApiCalls: increment(-1),
-      });
       return null; // Return null instead of throwing an error
     }
 
