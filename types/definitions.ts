@@ -9,3 +9,14 @@ export interface TranslatedEntity {
   translatedText: string;
   translatedLanguage: string;
 }
+
+export interface UserData {
+  apiCalls: number;
+  appUsageCount: number;
+  dataCollection: boolean;
+  geminiApiCalls: number;
+  lastResetDate: string;
+  lastReviewPrompt: number;
+  pushToken: string;
+  [key: string]: any;
+}

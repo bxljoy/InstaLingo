@@ -1,6 +1,31 @@
 import { auth, db } from "@/firebase/config";
-import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
+import { doc, getDoc, updateDoc, increment, setDoc } from "firebase/firestore";
 import { Alert } from "react-native";
+import { UserData } from "@/types/definitions";
+
+const DAILY_LIMIT = 50;
+const GEMINI_DAILY_LIMIT = 5;
+
+async function checkAndResetDailyLimit(
+  userDocRef: any,
+  field: "apiCalls" | "geminiApiCalls",
+  limit: number
+) {
+  const userDoc = await getDoc(userDocRef);
+  const userData = userDoc.data() as UserData | undefined;
+  const today = new Date().toDateString();
+
+  if (userData && userData.lastResetDate !== today) {
+    // Reset the counter if it's a new day
+    await updateDoc(userDocRef, {
+      [field]: 0,
+      lastResetDate: today,
+    });
+    return 0;
+  }
+
+  return userData ? userData[field] : 0;
+}
 
 export async function apiWrapper(apiCall: () => Promise<any>) {
   const user = auth.currentUser;
@@ -11,19 +36,22 @@ export async function apiWrapper(apiCall: () => Promise<any>) {
   const userDocRef = doc(db, "users", user.uid);
 
   try {
+    const currentCalls = await checkAndResetDailyLimit(
+      userDocRef,
+      "apiCalls",
+      DAILY_LIMIT
+    );
+
+    if (currentCalls >= DAILY_LIMIT) {
+      Alert.alert("Daily API call limit reached. Please try again tomorrow.");
+      return null;
+    }
+
     // Increment API call count
     await updateDoc(userDocRef, {
       apiCalls: increment(1),
+      lastResetDate: new Date().toDateString(),
     });
-
-    // Check if user has exceeded limit
-    const userDoc = await getDoc(userDocRef);
-    const userData = userDoc.data();
-    if (userData && userData.apiCalls > 50) {
-      // Updated limit to 50 calls
-      Alert.alert("API call limit exceeded", "Please try again later");
-      return null; // Return null instead of throwing an error
-    }
 
     // Make the actual API call
     const result = await apiCall();
@@ -34,7 +62,7 @@ export async function apiWrapper(apiCall: () => Promise<any>) {
       "Error",
       "An error occurred while processing your request. Please try again."
     );
-    return null; // Return null instead of throwing an error
+    return null;
   }
 }
 
@@ -47,19 +75,22 @@ export async function geminiApiWrapper(apiCall: () => Promise<any>) {
   const userDocRef = doc(db, "users", user.uid);
 
   try {
+    const currentCalls = await checkAndResetDailyLimit(
+      userDocRef,
+      "geminiApiCalls",
+      GEMINI_DAILY_LIMIT
+    );
+
+    if (currentCalls >= GEMINI_DAILY_LIMIT) {
+      Alert.alert("Daily AI call limit reached. Please try again tomorrow.");
+      return null;
+    }
+
     // Increment Gemini API call count
     await updateDoc(userDocRef, {
       geminiApiCalls: increment(1),
+      lastResetDate: new Date().toDateString(),
     });
-
-    // Check if user has exceeded Gemini API limit
-    const userDoc = await getDoc(userDocRef);
-    const userData = userDoc.data();
-    if (userData && userData.geminiApiCalls > 5) {
-      // Assuming a limit of 5 Gemini calls
-      Alert.alert("AI call limit exceeded", "Please try again later");
-      return null; // Return null instead of throwing an error
-    }
 
     // Make the actual Gemini API call
     const result = await apiCall();
@@ -70,6 +101,6 @@ export async function geminiApiWrapper(apiCall: () => Promise<any>) {
       "Error",
       "An error occurred while processing your request. Please try again."
     );
-    return null; // Return null instead of throwing an error
+    return null;
   }
 }
