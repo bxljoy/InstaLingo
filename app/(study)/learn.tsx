@@ -167,7 +167,7 @@ export default function LearnScreen() {
                 return (
                   <MaterialIcons
                     name="arrow-drop-down"
-                    size={24}
+                    size={48}
                     color="#007AFF"
                   />
                 );
