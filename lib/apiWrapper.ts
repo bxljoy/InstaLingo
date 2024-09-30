@@ -1,5 +1,5 @@
 import { auth, db } from "@/firebase/config";
-import { doc, getDoc, updateDoc, increment, setDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
 import { Alert } from "react-native";
 
 export async function apiWrapper(apiCall: () => Promise<any>) {
@@ -21,12 +21,11 @@ export async function apiWrapper(apiCall: () => Promise<any>) {
     const userData = userDoc.data();
     if (userData && userData.apiCalls > 1000) {
       // Assuming a limit of 1000 calls
-      //   throw new Error("API call limit exceeded");
       Alert.alert("API call limit exceeded", "Please try again later");
       await updateDoc(userDocRef, {
         apiCalls: increment(-1),
       });
-      return;
+      return null; // Return null instead of throwing an error
     }
 
     // Make the actual API call
@@ -34,7 +33,11 @@ export async function apiWrapper(apiCall: () => Promise<any>) {
     return result;
   } catch (error) {
     console.error("API call failed:", error);
-    throw error;
+    Alert.alert(
+      "Error",
+      "An error occurred while processing your request. Please try again."
+    );
+    return null; // Return null instead of throwing an error
   }
 }
 
@@ -61,7 +64,7 @@ export async function geminiApiWrapper(apiCall: () => Promise<any>) {
       await updateDoc(userDocRef, {
         geminiApiCalls: increment(-1),
       });
-      return;
+      return null; // Return null instead of throwing an error
     }
 
     // Make the actual Gemini API call
@@ -69,6 +72,10 @@ export async function geminiApiWrapper(apiCall: () => Promise<any>) {
     return result;
   } catch (error) {
     console.error("Gemini API call failed:", error);
-    throw error;
+    Alert.alert(
+      "Error",
+      "An error occurred while processing your request. Please try again."
+    );
+    return null; // Return null instead of throwing an error
   }
 }

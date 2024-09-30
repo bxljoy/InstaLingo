@@ -67,10 +67,12 @@ export default function HomeScreen() {
     try {
       if (image) {
         const text = await apiWrapper(() => analyzeImage(image));
-        router.push({
-          pathname: "/learn",
-          params: { extractedText: text },
-        });
+        if (text) {
+          router.push({
+            pathname: "/learn",
+            params: { extractedText: text },
+          });
+        }
       }
     } catch (error) {
       console.error("Error extracting text:", error);
@@ -98,10 +100,12 @@ export default function HomeScreen() {
         const analysis = await geminiApiWrapper(() =>
           generateContent(prompt, image)
         );
-        router.push({
-          pathname: "/analysis",
-          params: { analysisResult: analysis },
-        });
+        if (analysis) {
+          router.push({
+            pathname: "/analysis",
+            params: { analysisResult: analysis },
+          });
+        }
       }
     } catch (error) {
       console.error("Error analyzing image:", error);
