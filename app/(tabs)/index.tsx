@@ -13,7 +13,7 @@ import { generateContent } from "@/lib/geminiApi";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { apiWrapper } from "@/lib/apiWrapper";
+import { apiWrapper, geminiApiWrapper } from "@/lib/apiWrapper";
 import ReviewPrompt from "@/components/ReviewPrompt";
 import RNPickerSelect from "react-native-picker-select";
 
@@ -95,7 +95,9 @@ export default function HomeScreen() {
             "Extract all text from this image using OCR and provide a summary of the main ideas. Highlight any important figures or names mentioned.";
         }
 
-        const analysis = await apiWrapper(() => generateContent(prompt, image));
+        const analysis = await geminiApiWrapper(() =>
+          generateContent(prompt, image)
+        );
         router.push({
           pathname: "/analysis",
           params: { analysisResult: analysis },
