@@ -48,6 +48,7 @@ export default function HomeScreen() {
 
   const checkAndSetProStatus = async () => {
     const status = await checkSubscriptionStatus();
+    console.info("Pro status:", status);
     setIsPro(status);
   };
 
@@ -83,16 +84,27 @@ export default function HomeScreen() {
     setIsExtracting(true);
     try {
       if (image) {
-        const text = await apiWrapper(() => analyzeImage(image));
-        if (text) {
-          router.push({
-            pathname: "/learn",
-            params: { extractedText: text },
-          });
+        let text;
+        if (!isPro) {
+          text = await apiWrapper(() => analyzeImage(image));
+          if (text) {
+            router.push({
+              pathname: "/learn",
+              params: { extractedText: text },
+            });
+          } else {
+            // console.info("API call hit daily limit");
+            setLimitType("api");
+            setIsDailyLimitModalVisible(true);
+          }
         } else {
-          console.info("API call hit daily limit");
-          setLimitType("api");
-          setIsDailyLimitModalVisible(true);
+          text = await analyzeImage(image);
+          if (text) {
+            router.push({
+              pathname: "/learn",
+              params: { extractedText: text },
+            });
+          }
         }
       }
     } catch (error) {
@@ -118,18 +130,29 @@ export default function HomeScreen() {
             "Extract all text from this image using OCR and provide a summary of the main ideas. Highlight any important figures or names mentioned.";
         }
 
-        const analysis = await geminiApiWrapper(() =>
-          generateContent(prompt, image)
-        );
-        if (analysis) {
-          router.push({
-            pathname: "/analysis",
-            params: { analysisResult: analysis },
-          });
+        let analysis;
+        if (!isPro) {
+          analysis = await geminiApiWrapper(() =>
+            generateContent(prompt, image)
+          );
+          if (analysis) {
+            router.push({
+              pathname: "/analysis",
+              params: { analysisResult: analysis },
+            });
+          } else {
+            // console.info("Gemini API call hit daily limit");
+            setLimitType("AI");
+            setIsDailyLimitModalVisible(true);
+          }
         } else {
-          console.info("Gemini API call hit daily limit");
-          setLimitType("AI");
-          setIsDailyLimitModalVisible(true);
+          analysis = await generateContent(prompt, image);
+          if (analysis) {
+            router.push({
+              pathname: "/analysis",
+              params: { analysisResult: analysis },
+            });
+          }
         }
       }
     } catch (error) {
