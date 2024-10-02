@@ -43,7 +43,7 @@ export async function apiWrapper(apiCall: () => Promise<any>) {
     );
 
     if (currentCalls >= DAILY_LIMIT) {
-      Alert.alert("Daily API call limit reached. Please try again tomorrow.");
+      // Alert.alert("Daily API call limit reached. Please try again tomorrow.");
       return null;
     }
 
@@ -82,7 +82,7 @@ export async function geminiApiWrapper(apiCall: () => Promise<any>) {
     );
 
     if (currentCalls >= GEMINI_DAILY_LIMIT) {
-      Alert.alert("Daily AI call limit reached. Please try again tomorrow.");
+      // Alert.alert("Daily AI call limit reached. Please try again tomorrow.");
       return null;
     }
 

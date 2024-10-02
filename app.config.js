@@ -60,6 +60,7 @@ export default ({ config }) => ({
     eas: {
       projectId: "13b1a28f-354c-45d2-9907-91a9f9abce7e",
     },
+    revenueCatApiKey: process.env.REVENUE_CAT_API_KEY,
   },
   plugins: [
     "expo-router",

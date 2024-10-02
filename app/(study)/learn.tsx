@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import * as Clipboard from "expo-clipboard";
+import * as FileSystem from "expo-file-system";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 import { initDatabase, saveExtractedText } from "@/lib/db";
 import { translateText } from "@/lib/googleTranslate";
 import RNPickerSelect from "react-native-picker-select";
@@ -95,6 +98,49 @@ export default function LearnScreen() {
       } catch (error) {
         console.error("Error translating text:", error);
       }
+    }
+  };
+
+  const generateAndSharePDF = async () => {
+    try {
+      const htmlContent = `
+        <html>
+          <body style="font-family: Arial, sans-serif;">
+            <h1 style="color: #007AFF;text-align: center;">Extracted Text</h1>
+            <p>${extractedText}</p>
+            ${
+              translatedEntity
+                ? `
+                <br /><br /><br />
+                <h1 style="color: #007AFF;text-align: center;">Translated Text</h1>
+                <p>${translatedEntity.translatedText}</p>
+              `
+                : ""
+            }
+          </body>
+        </html>
+      `;
+
+      const { uri } = await Print.printToFileAsync({
+        html: htmlContent,
+        base64: false,
+      });
+
+      const pdfName = `text_translation_${Date.now()}.pdf`;
+      const pdfUri = `${FileSystem.documentDirectory}${pdfName}`;
+      await FileSystem.moveAsync({
+        from: uri,
+        to: pdfUri,
+      });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(pdfUri);
+      } else {
+        Alert.alert("Success", `PDF saved to ${pdfUri}`);
+      }
+    } catch (error) {
+      console.error("Error generating or sharing PDF:", error);
+      Alert.alert("Error", "Failed to generate or share PDF");
     }
   };
 
@@ -214,10 +260,18 @@ export default function LearnScreen() {
             <TouchableOpacity
               onPress={onSave}
               disabled={isSaving}
-              className="bg-blue-500 p-4 rounded-full flex-1 ml-2"
+              className="bg-blue-500 p-4 rounded-full flex-1 mr-2"
             >
               <Text className="text-white text-center font-bold">
                 {isSaving ? "Saving..." : "Save"}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={generateAndSharePDF}
+              className="bg-green-500 p-4 rounded-full flex-1 ml-2"
+            >
+              <Text className="text-white text-center font-bold">
+                Generate & Share PDF
               </Text>
             </TouchableOpacity>
           </View>

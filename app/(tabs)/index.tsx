@@ -16,6 +16,12 @@ import { useRouter } from "expo-router";
 import { apiWrapper, geminiApiWrapper } from "@/lib/apiWrapper";
 import ReviewPrompt from "@/components/ReviewPrompt";
 import RNPickerSelect from "react-native-picker-select";
+import {
+  initializeRevenueCat,
+  checkSubscriptionStatus,
+} from "@/lib/revenueCat";
+import { presentPaywall } from "@/lib/presentPaywall";
+import { DailyLimitModal } from "@/components/DailyLimitModal";
 
 export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState(false);
@@ -26,13 +32,24 @@ export default function HomeScreen() {
     "extract" | "identify" | "summary"
   >("extract");
   const router = useRouter();
+  const [isPro, setIsPro] = useState(false);
+  const [isDailyLimitModalVisible, setIsDailyLimitModalVisible] =
+    useState(false);
+  const [limitType, setLimitType] = useState<"api" | "AI">("api");
 
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
     })();
+    initializeRevenueCat();
+    checkAndSetProStatus();
   }, []);
+
+  const checkAndSetProStatus = async () => {
+    const status = await checkSubscriptionStatus();
+    setIsPro(status);
+  };
 
   const takePicture = async () => {
     if (hasPermission) {
@@ -72,6 +89,10 @@ export default function HomeScreen() {
             pathname: "/learn",
             params: { extractedText: text },
           });
+        } else {
+          console.info("API call hit daily limit");
+          setLimitType("api");
+          setIsDailyLimitModalVisible(true);
         }
       }
     } catch (error) {
@@ -105,6 +126,10 @@ export default function HomeScreen() {
             pathname: "/analysis",
             params: { analysisResult: analysis },
           });
+        } else {
+          console.info("Gemini API call hit daily limit");
+          setLimitType("AI");
+          setIsDailyLimitModalVisible(true);
         }
       }
     } catch (error) {
@@ -112,6 +137,14 @@ export default function HomeScreen() {
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const handleUpgrade = async () => {
+    const purchased = await presentPaywall();
+    if (purchased) {
+      setIsPro(true);
+    }
+    setIsDailyLimitModalVisible(false);
   };
 
   const promptOptions = [
@@ -217,6 +250,12 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </ScrollView>
       <ReviewPrompt />
+      <DailyLimitModal
+        limitType={limitType}
+        isVisible={isDailyLimitModalVisible}
+        onUpgrade={handleUpgrade}
+        onClose={() => setIsDailyLimitModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
