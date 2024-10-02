@@ -121,13 +121,12 @@ export default function HomeScreen() {
         let prompt = "";
         if (promptType === "summary") {
           prompt =
-            "Analyze this image and Summarize the content of the image, then doing refining and context-aware adjustments";
+            "Analyze this image and Summarize the content of the image, then doing refining and context-aware adjustments, and finally output only the summary";
         } else if (promptType === "identify") {
           prompt =
             "Identify the product or objects in the image, and explain their potential use or value based on the image's content.";
         } else if (promptType === "extract") {
-          prompt =
-            "Extract all text from this image using OCR and provide a summary of the main ideas. Highlight any important figures or names mentioned.";
+          prompt = "Extract all text from this image using OCR";
         }
 
         let analysis;
