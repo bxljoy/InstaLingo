@@ -2,7 +2,7 @@ export default ({ config }) => ({
   ...config,
   name: "InstaLingo",
   slug: "instalingo",
-  version: "1.0.2",
+  version: "1.0.3",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "instalingo",
