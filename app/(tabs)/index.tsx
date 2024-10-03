@@ -185,9 +185,6 @@ export default function HomeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1 px-5 pb-6">
-        <Text className="text-3xl font-extrabold text-gray-800 text-center mb-4">
-          Your Camera, Your Tutor
-        </Text>
         <TouchableOpacity onPress={pickImage} activeOpacity={0.7}>
           {image ? (
             <Image
