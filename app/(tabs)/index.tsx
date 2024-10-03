@@ -189,16 +189,16 @@ export default function HomeScreen() {
           {image ? (
             <Image
               source={{ uri: image }}
-              className="w-72 h-72 rounded-2xl self-center mb-4"
+              className="w-full h-72 rounded-2xl self-center mb-4"
             />
           ) : (
-            <View className="w-72 h-72 bg-gray-200 rounded-2xl justify-center items-center self-center mb-4">
+            <View className="w-full h-72 bg-gray-200 rounded-2xl justify-center items-center self-center mb-4">
               <MaterialIcons name="image" size={48} color="#007AFF" />
               <Text className="text-gray-600 mt-2">Tap to select image</Text>
             </View>
           )}
         </TouchableOpacity>
-        <View className="flex-row justify-between items-center w-full mt-2 rounded-xl bg-gray-200 p-3">
+        <View className="flex-row justify-between items-center w-full mt-2 rounded-xl bg-gray-200 p-1">
           <TouchableOpacity onPress={takePicture} className="items-center p-2">
             <MaterialIcons name="camera-alt" size={48} color="#007AFF" />
           </TouchableOpacity>
@@ -207,7 +207,7 @@ export default function HomeScreen() {
             disabled={isExtracting || !image}
             className={`${
               image ? "bg-blue-500" : "bg-gray-300"
-            } rounded-full px-6 py-4`}
+            } rounded-full px-6 py-2`}
           >
             <Text className="text-white font-bold text-base text-center">
               {isExtracting ? "Extracting..." : "Extract Text"}
@@ -217,56 +217,58 @@ export default function HomeScreen() {
             <MaterialIcons name="photo" size={48} color="#007AFF" />
           </TouchableOpacity>
         </View>
-        <RNView className="mt-4 mb-4">
-          <Text className="text-gray-700 mb-2">Select Analysis Type:</Text>
-          <RNPickerSelect
-            onValueChange={(value) => setPromptType(value)}
-            items={promptOptions}
-            value={promptType}
-            style={{
-              inputIOS: {
-                fontSize: 16,
-                paddingVertical: 12,
-                paddingHorizontal: 10,
-                borderWidth: 1,
-                borderColor: "gray",
-                borderRadius: 4,
-                color: "black",
-                paddingRight: 30,
-              },
-              inputAndroid: {
-                fontSize: 16,
-                paddingHorizontal: 10,
-                paddingVertical: 8,
-                borderWidth: 1,
-                borderColor: "gray",
-                borderRadius: 8,
-                color: "black",
-                paddingRight: 30,
-              },
-            }}
-            Icon={() => {
-              return (
-                <MaterialIcons
-                  name="arrow-drop-down"
-                  size={48}
-                  color="#007AFF"
-                />
-              );
-            }}
-          />
+        <Text className="text-gray-700 my-4 font-bold text-xl">Try AI:</Text>
+        <RNView className="flex-row justify-between items-center mt-4 mb-4">
+          <RNView className="flex-1 mr-2">
+            <RNPickerSelect
+              onValueChange={(value) => setPromptType(value)}
+              items={promptOptions}
+              value={promptType}
+              style={{
+                inputIOS: {
+                  fontSize: 16,
+                  paddingVertical: 12,
+                  paddingHorizontal: 10,
+                  borderWidth: 1,
+                  borderColor: "gray",
+                  borderRadius: 4,
+                  color: "black",
+                  paddingRight: 30,
+                },
+                inputAndroid: {
+                  fontSize: 16,
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
+                  borderWidth: 1,
+                  borderColor: "gray",
+                  borderRadius: 8,
+                  color: "black",
+                  paddingRight: 30,
+                },
+              }}
+              Icon={() => {
+                return (
+                  <MaterialIcons
+                    name="arrow-drop-down"
+                    size={48}
+                    color="#007AFF"
+                  />
+                );
+              }}
+            />
+          </RNView>
+          <TouchableOpacity
+            onPress={handleAnalyze}
+            disabled={isAnalyzing || !image}
+            className={`${
+              image ? "bg-green-500" : "bg-gray-300"
+            } rounded-full px-4 py-3 flex-1`}
+          >
+            <Text className="text-white font-bold text-base text-center">
+              {isAnalyzing ? "Analyzing..." : "Analyze Image"}
+            </Text>
+          </TouchableOpacity>
         </RNView>
-        <TouchableOpacity
-          onPress={handleAnalyze}
-          disabled={isAnalyzing || !image}
-          className={`${
-            image ? "bg-green-500" : "bg-gray-300"
-          } rounded-full px-6 py-4 mt-4`}
-        >
-          <Text className="text-white font-bold text-lg text-center">
-            {isAnalyzing ? "Analyzing..." : "Analyze Image By AI"}
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
       <ReviewPrompt />
       <DailyLimitModal
