@@ -274,7 +274,7 @@ export default function AnalysisScreen() {
               className="bg-green-500 p-4 rounded-full flex-1 ml-2"
             >
               <Text className="text-white text-center font-bold">
-                Save to PDF
+                Save as PDF
               </Text>
             </TouchableOpacity>
           </View>

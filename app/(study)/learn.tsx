@@ -271,7 +271,7 @@ export default function LearnScreen() {
               className="bg-green-500 p-4 rounded-full flex-1 ml-2"
             >
               <Text className="text-white text-center font-bold">
-                Generate & Share PDF
+                Save as PDF
               </Text>
             </TouchableOpacity>
           </View>
