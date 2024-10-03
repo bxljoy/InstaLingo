@@ -8,12 +8,12 @@ interface DailyLimitModalProps {
   onClose: () => void;
 }
 
-export const DailyLimitModal: React.FC<DailyLimitModalProps> = ({
-  limitType,
+export const DailyLimitModal = ({
   isVisible,
   onUpgrade,
   onClose,
-}) => {
+  limitType,
+}: DailyLimitModalProps) => {
   return (
     <Modal transparent={true} visible={isVisible} animationType="fade">
       <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
