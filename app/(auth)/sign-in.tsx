@@ -82,7 +82,8 @@ export default function SignIn() {
         errorMessage = "Invalid email address. Please enter a valid email.";
       }
 
-      Alert.alert("Sign In Error", errorMessage);
+      // Alert.alert("Sign In Error", errorMessage);
+      console.error("Sign In Error", errorMessage);
     }
   };
 
@@ -109,7 +110,8 @@ export default function SignIn() {
       } else if (error.code === "PLAY_SERVICES_NOT_AVAILABLE") {
         errorMessage = "Google Play Services is not available on this device.";
       }
-      Alert.alert("Google Sign In Error", errorMessage);
+      // Alert.alert("Google Sign In Error", errorMessage);
+      console.error("Google Sign In Error", errorMessage);
     }
   };
 
@@ -145,6 +147,7 @@ export default function SignIn() {
           errorMessage += ` Message: ${error.message}`;
         }
         // Alert.alert("Sign In Error", errorMessage);
+        console.error("Sign In Error", errorMessage);
       }
     }
   };
