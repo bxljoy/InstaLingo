@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 import { UserData } from "@/types/definitions";
 
 const DAILY_LIMIT = 50;
-const GEMINI_DAILY_LIMIT = 5;
+const GEMINI_DAILY_LIMIT = 10;
 
 async function checkAndResetDailyLimit(
   userDocRef: any,

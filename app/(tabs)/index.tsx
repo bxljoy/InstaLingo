@@ -48,7 +48,7 @@ export default function HomeScreen() {
 
   const checkAndSetProStatus = async () => {
     const status = await checkSubscriptionStatus();
-    console.info("Pro status:", status);
+    // console.info("Pro status:", status);
     setIsPro(status);
   };
 

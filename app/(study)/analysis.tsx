@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import { initDatabase, saveExtractedText } from "@/lib/db";
@@ -12,6 +12,9 @@ import { getAllLanguages } from "@/lib/languageCodeMapping";
 import { auth } from "@/firebase/config";
 import { apiWrapper } from "@/lib/apiWrapper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
+import * as FileSystem from "expo-file-system";
 
 export default function AnalysisScreen() {
   const { analysisResult } = useLocalSearchParams();
@@ -94,6 +97,53 @@ export default function AnalysisScreen() {
       } catch (error) {
         console.error("Error translating text:", error);
       }
+    }
+  };
+
+  const generateAndSharePDF = async () => {
+    try {
+      const htmlContent = `
+        <html>
+          <body style="font-family: Arial, sans-serif;">
+            <h1 style="color: #007AFF;text-align: center;">Analysis Result</h1>
+            <p>${analysisResult}</p>
+            ${
+              translatedEntity
+                ? `
+                <h1 style="color: #007AFF;text-align: center;">Translated Analysis</h1>
+                <p>${translatedEntity.translatedText}</p>
+              `
+                : ""
+            }
+          </body>
+        </html>
+      `;
+
+      const { uri } = await Print.printToFileAsync({
+        html: htmlContent,
+        base64: false,
+      });
+
+      const pdfName = `Analysis_Result_${new Date()
+        .toISOString()
+        .replace(/[:.]/g, "-")}.pdf`;
+      const pdfUri = `${FileSystem.documentDirectory}${pdfName}`;
+      await FileSystem.moveAsync({
+        from: uri,
+        to: pdfUri,
+      });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(pdfUri);
+      } else {
+        Alert.alert(
+          "Sharing not available",
+          `PDF saved as ${pdfName} in your device's documents folder.`
+        );
+      }
+    } catch (error) {
+      console.error("Error generating or sharing PDF:", error);
+      Alert.alert("Error", "Failed to generate or share PDF");
     }
   };
 
@@ -213,10 +263,18 @@ export default function AnalysisScreen() {
             <TouchableOpacity
               onPress={onSave}
               disabled={isSaving}
-              className="bg-blue-500 p-4 rounded-full flex-1 ml-2"
+              className="bg-blue-500 p-4 rounded-full flex-1 mr-2"
             >
               <Text className="text-white text-center font-bold">
                 {isSaving ? "Saving..." : "Save"}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={generateAndSharePDF}
+              className="bg-green-500 p-4 rounded-full flex-1 ml-2"
+            >
+              <Text className="text-white text-center font-bold">
+                Save to PDF
               </Text>
             </TouchableOpacity>
           </View>
