@@ -144,7 +144,7 @@ export default function SignIn() {
         if (error.message) {
           errorMessage += ` Message: ${error.message}`;
         }
-        Alert.alert("Sign In Error", errorMessage);
+        // Alert.alert("Sign In Error", errorMessage);
       }
     }
   };
