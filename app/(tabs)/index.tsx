@@ -4,7 +4,14 @@ import {
   TouchableOpacity,
   ScrollView,
   View as RNView,
+  Animated,
 } from "react-native";
+// import Animated, {
+//   useSharedValue,
+//   withTiming,
+//   useAnimatedStyle,
+//   Easing,
+// } from 'react-native-reanimated';
 import { Text, View } from "@/components/Themed";
 import * as ImagePicker from "expo-image-picker";
 import { Camera } from "expo-camera";
@@ -15,7 +22,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { apiWrapper, geminiApiWrapper } from "@/lib/apiWrapper";
 import ReviewPrompt from "@/components/ReviewPrompt";
-import RNPickerSelect from "react-native-picker-select";
 import {
   initializeRevenueCat,
   checkSubscriptionStatus,
@@ -36,6 +42,8 @@ export default function HomeScreen() {
   const [isDailyLimitModalVisible, setIsDailyLimitModalVisible] =
     useState(false);
   const [limitType, setLimitType] = useState<"api" | "AI">("api");
+  const [showAIOptions, setShowAIOptions] = useState(false);
+  const [aiOptionsHeight] = useState(new Animated.Value(0));
 
   useEffect(() => {
     (async () => {
@@ -169,11 +177,19 @@ export default function HomeScreen() {
     setIsDailyLimitModalVisible(false);
   };
 
-  const promptOptions = [
-    { label: "Extract", value: "extract" },
-    { label: "Identify", value: "identify" },
-    { label: "Summary", value: "summary" },
-  ];
+  const toggleAIOptions = () => {
+    setShowAIOptions(!showAIOptions);
+    Animated.timing(aiOptionsHeight, {
+      toValue: showAIOptions ? 0 : 150, // Adjust this value based on your desired height
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleAIOption = (option: "extract" | "identify" | "summary") => {
+    setPromptType(option);
+    handleAnalyze();
+  };
 
   if (hasPermission === null) {
     return <View />;
@@ -217,58 +233,38 @@ export default function HomeScreen() {
             <MaterialIcons name="photo" size={48} color="#007AFF" />
           </TouchableOpacity>
         </View>
-        <Text className="text-gray-700 my-4 font-bold text-xl">Try AI:</Text>
-        <RNView className="flex-row justify-between items-center mt-4 mb-4">
-          <RNView className="flex-1 mr-2">
-            <RNPickerSelect
-              onValueChange={(value) => setPromptType(value)}
-              items={promptOptions}
-              value={promptType}
-              style={{
-                inputIOS: {
-                  fontSize: 16,
-                  paddingVertical: 12,
-                  paddingHorizontal: 10,
-                  borderWidth: 1,
-                  borderColor: "gray",
-                  borderRadius: 4,
-                  color: "black",
-                  paddingRight: 30,
-                },
-                inputAndroid: {
-                  fontSize: 16,
-                  paddingHorizontal: 10,
-                  paddingVertical: 8,
-                  borderWidth: 1,
-                  borderColor: "gray",
-                  borderRadius: 8,
-                  color: "black",
-                  paddingRight: 30,
-                },
-              }}
-              Icon={() => {
-                return (
-                  <MaterialIcons
-                    name="arrow-drop-down"
-                    size={48}
-                    color="#007AFF"
-                  />
-                );
-              }}
-            />
+
+        <TouchableOpacity
+          onPress={toggleAIOptions}
+          className="bg-purple-500 rounded-full px-6 py-3 mt-6"
+        >
+          <Text className="text-white font-bold text-base text-center">
+            {showAIOptions ? "Hide AI Options" : "Try AI"}
+          </Text>
+        </TouchableOpacity>
+
+        <Animated.View style={{ height: aiOptionsHeight, overflow: "hidden" }}>
+          <RNView className="flex-row justify-between items-center w-full mt-4 p-1">
+            <TouchableOpacity
+              onPress={() => handleAIOption("extract")}
+              className="items-center justify-center w-24 h-24 rounded-full bg-[#373737]"
+            >
+              <Text className="text-white font-bold text-sm">Extract</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleAIOption("identify")}
+              className="items-center justify-center w-24 h-24 rounded-full bg-[#858585]"
+            >
+              <Text className="text-white font-bold text-sm">Identify</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleAIOption("summary")}
+              className="items-center justify-center w-24 h-24 rounded-full bg-[#AD8E65]"
+            >
+              <Text className="text-white font-bold text-sm">Summary</Text>
+            </TouchableOpacity>
           </RNView>
-          <TouchableOpacity
-            onPress={handleAnalyze}
-            disabled={isAnalyzing || !image}
-            className={`${
-              image ? "bg-green-500" : "bg-gray-300"
-            } rounded-full px-4 py-3 flex-1`}
-          >
-            <Text className="text-white font-bold text-base text-center">
-              {isAnalyzing ? "Analyzing..." : "Analyze Image"}
-            </Text>
-          </TouchableOpacity>
-        </RNView>
+        </Animated.View>
       </ScrollView>
       <ReviewPrompt />
       <DailyLimitModal

@@ -4,6 +4,7 @@ import { Text } from "@/components/Themed";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  fetchSignInMethodsForEmail,
 } from "firebase/auth";
 import { auth } from "../../firebase/config";
 import { useRouter } from "expo-router";
@@ -21,6 +22,16 @@ export default function SignUp() {
     }
 
     try {
+      // Check if email already exists
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      if (signInMethods.length > 0) {
+        Alert.alert(
+          "Email Already Exists",
+          "This email is already registered. Please use a different email or sign in."
+        );
+        return;
+      }
+
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
