@@ -1,5 +1,5 @@
 import Onboarding from "react-native-onboarding-swiper";
-import { Text } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { useRef } from "react";
 import { useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
@@ -14,14 +14,26 @@ export default function OnBoardingScreen() {
     router.replace("/sign-in");
   };
 
+  const doneButton = () => {
+    return (
+      <TouchableOpacity
+        className="text-white px-4 py-2 rounded-md"
+        onPress={handleOnboardingComplete}
+      >
+        <Text className="text-white">Done</Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <Onboarding
       ref={onboardingRef}
       onDone={handleOnboardingComplete}
       onSkip={handleOnboardingComplete}
+      DoneButtonComponent={doneButton}
       pages={[
         {
-          backgroundColor: "#fff",
+          backgroundColor: "#a7f3d0",
           image: (
             <LottieView
               source={require("@/assets/animations/scanning.json")}
@@ -42,7 +54,7 @@ export default function OnBoardingScreen() {
           ),
         },
         {
-          backgroundColor: "#fff",
+          backgroundColor: "#fef3c7",
           image: (
             <LottieView
               source={require("@/assets/animations/meeting.json")}
@@ -63,7 +75,7 @@ export default function OnBoardingScreen() {
           ),
         },
         {
-          backgroundColor: "#fff",
+          backgroundColor: "#a78bfa",
           image: (
             <LottieView
               source={require("@/assets/animations/shoutout.json")}
