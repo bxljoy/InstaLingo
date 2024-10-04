@@ -99,7 +99,7 @@ export default function TabLayout() {
         },
         headerTintColor: Colors[colorScheme ?? "light"].text,
         tabBarShowLabel: true,
-        headerRight: () => <ProStatusButton />,
+        // headerRight: () => <ProStatusButton />,
       }}
     >
       <Tabs.Screen
@@ -107,7 +107,8 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-          // headerRight: () => <ProStatusButton />,
+          // headerLeft: () => <ProStatusButton />,
+          headerRight: () => <ProStatusButton />,
         }}
       />
       <Tabs.Screen

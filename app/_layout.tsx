@@ -14,6 +14,7 @@ import { registerForPushNotificationsAsync } from "@/lib/pushNotifications";
 import * as Notifications from "expo-notifications";
 import { auth, db } from "@/firebase/config";
 import { doc, updateDoc, increment } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -35,6 +36,7 @@ function RootLayoutNav() {
   const router = useRouter();
   const [isNotificationRegistered, setIsNotificationRegistered] =
     useState(false);
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
 
   const incrementAppUsage = useCallback(async () => {
     if (!user) return;
@@ -56,17 +58,25 @@ function RootLayoutNav() {
   }, [user, incrementAppUsage]);
 
   useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      const onboardingStatus = await AsyncStorage.getItem("hasSeenOnboarding");
+      setHasSeenOnboarding(onboardingStatus === "true");
+    };
+
+    checkOnboardingStatus();
+  }, []);
+
+  useEffect(() => {
     if (!isLoading) {
       const inAuthGroup = segments[0] === "(auth)";
-      if (!user && !inAuthGroup) {
-        // Redirect to the sign-in page if the user is not signed in
+      if (!user && !inAuthGroup && hasSeenOnboarding) {
         router.replace("/sign-in");
+      } else if (!user && !inAuthGroup && !hasSeenOnboarding) {
+        router.replace("/onboarding");
       } else if (user && inAuthGroup) {
-        // Redirect to the home page if the user is signed in and still in the auth group
         router.replace("/(tabs)");
       }
 
-      // Request push notification permission and register token only when user is logged in and it hasn't been done yet
       if (user && !isNotificationRegistered) {
         registerForPushNotificationsAsync()
           .then((token) => {
@@ -91,7 +101,7 @@ function RootLayoutNav() {
 
       return () => clearTimeout(timer);
     }
-  }, [user, segments, isLoading, isNotificationRegistered]);
+  }, [user, segments, isLoading, isNotificationRegistered, hasSeenOnboarding]);
 
   useEffect(() => {
     const subscription = Notifications.addNotificationReceivedListener(
@@ -104,12 +114,13 @@ function RootLayoutNav() {
   }, []);
 
   if (isLoading) {
-    return null; // or a loading indicator
+    return null;
   }
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(study)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />

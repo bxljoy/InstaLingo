@@ -1,4 +1,5 @@
 import { ViewProps, TextProps, ImageProps } from "react-native";
+import { LottieViewProps } from "lottie-react-native";
 
 declare module "react-native" {
   interface ViewProps {
@@ -17,4 +18,10 @@ declare module "react-native" {
     className?: string;
   }
   // Add more components as needed.
+}
+
+declare module "lottie-react-native" {
+  interface LottieViewProps {
+    className?: string;
+  }
 }
