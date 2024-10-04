@@ -8,15 +8,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function OnBoardingScreen() {
   const onboardingRef = useRef<Onboarding>(null);
   const router = useRouter();
+
+  const handleOnboardingComplete = async () => {
+    await AsyncStorage.setItem("onboardingComplete", "true");
+    router.replace("/sign-in");
+  };
+
   return (
     <Onboarding
       ref={onboardingRef}
-      onDone={() => {
-        router.replace("/sign-in");
-      }}
-      onSkip={() => {
-        router.replace("/sign-in");
-      }}
+      onDone={handleOnboardingComplete}
+      onSkip={handleOnboardingComplete}
       pages={[
         {
           backgroundColor: "#fff",
