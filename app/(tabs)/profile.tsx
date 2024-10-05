@@ -16,6 +16,7 @@ import {
 } from "firebase/auth";
 import { doc, deleteDoc } from "firebase/firestore";
 import { clearExtractedTexts } from "@/lib/db";
+import useStore from "@/store/appStore";
 
 export default function ProfileScreen() {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -23,7 +24,8 @@ export default function ProfileScreen() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const router = useRouter();
-  const user = auth.currentUser;
+
+  const user = useStore((state) => state.user);
 
   useEffect(() => {
     const checkEmailVerification = async () => {

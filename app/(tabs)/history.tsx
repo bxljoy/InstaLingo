@@ -18,15 +18,15 @@ import {
 } from "@/lib/db";
 import { ExtractedText } from "@/types/definitions";
 import { MaterialIcons } from "@expo/vector-icons";
-import { auth } from "@/firebase/config";
 import { collection, query, getDocs, orderBy } from "firebase/firestore";
 import { db as firestoreDb } from "@/firebase/config";
+import useStore from "@/store/appStore";
 
 export default function HistoryScreen() {
   const [extractedTexts, setExtractedTexts] = useState<ExtractedText[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
-  const userId = auth.currentUser?.uid;
+  const userId = useStore((state) => state.user?.uid);
 
   const loadExtractedTexts = useCallback(async () => {
     if (userId) {

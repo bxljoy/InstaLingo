@@ -2,17 +2,19 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Switch, Alert, StyleSheet } from "react-native";
 import { auth, db } from "@/firebase/config";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import useStore from "@/store/appStore";
 
 export default function PrivacySettingsScreen() {
   const [dataCollection, setDataCollection] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const user = useStore((state) => state.user);
+  const isLoading = useStore((state) => state.isLoading);
+  const setIsLoading = useStore((state) => state.setIsLoading);
 
   useEffect(() => {
     loadSettings();
   }, []);
 
   const loadSettings = async () => {
-    const user = auth.currentUser;
     if (user) {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {

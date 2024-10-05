@@ -6,7 +6,7 @@ import {
   sendEmailVerification,
   fetchSignInMethodsForEmail,
 } from "firebase/auth";
-import { auth } from "../../firebase/config";
+import { auth } from "@/firebase/config";
 import { useRouter } from "expo-router";
 
 export default function SignUp() {
