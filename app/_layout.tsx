@@ -8,30 +8,29 @@ import {
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useColorScheme } from "react-native";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { useRouter, useSegments } from "expo-router";
 import { registerForPushNotificationsAsync } from "@/lib/pushNotifications";
 import * as Notifications from "expo-notifications";
 import { auth, db } from "@/firebase/config";
 import { doc, updateDoc, increment } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useStore from "@/store/appStore";
+import { onAuthStateChanged } from "firebase/auth";
 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from "expo-router";
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
-};
-
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const { user, isLoading } = useAuth();
+  const user = useStore((state) => state.user);
+  const isLoading = useStore((state) => state.isLoading);
+  const setUser = useStore((state) => state.setUser);
+  const setIsLoading = useStore((state) => state.setIsLoading);
   const segments = useSegments();
   const router = useRouter();
   const [isNotificationRegistered, setIsNotificationRegistered] =
@@ -50,6 +49,15 @@ function RootLayoutNav() {
       console.error("Error incrementing app usage count:", error);
     }
   }, [user]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setIsLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -140,19 +148,9 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
   if (!loaded) {
     return null;
   }
 
-  return (
-    <AuthProvider>
-      <RootLayoutNav />
-    </AuthProvider>
-  );
+  return <RootLayoutNav />;
 }

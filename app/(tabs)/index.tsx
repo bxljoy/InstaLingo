@@ -28,9 +28,11 @@ import {
 } from "@/lib/revenueCat";
 import { presentPaywall } from "@/lib/presentPaywall";
 import { DailyLimitModal } from "@/components/DailyLimitModal";
+import { Alert, Linking } from "react-native";
 
 export default function HomeScreen() {
-  const [hasPermission, setHasPermission] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [hasGalleryPermission, setHasGalleryPermission] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [isExtracting, setIsExtracting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -47,8 +49,13 @@ export default function HomeScreen() {
 
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === "granted");
+      const { status: cameraStatus } =
+        await Camera.requestCameraPermissionsAsync();
+      setHasCameraPermission(cameraStatus === "granted");
+
+      const { status: galleryStatus } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      setHasGalleryPermission(galleryStatus === "granted");
     })();
     initializeRevenueCat();
     checkAndSetProStatus();
@@ -61,21 +68,57 @@ export default function HomeScreen() {
   };
 
   const takePicture = async () => {
-    if (hasPermission) {
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
+    // console.info("takePicture function called");
+    // console.info("hasCameraPermission before check:", hasCameraPermission);
 
-      if (!result.canceled) {
-        setImage(result.assets[0].uri);
+    if (hasCameraPermission === null || hasCameraPermission === false) {
+      // console.info("Requesting camera permission");
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      // console.info("Permission status after request:", status);
+
+      if (status === "denied") {
+        Alert.alert(
+          "Camera Permission Required",
+          "This app needs access to your camera to function properly. Would you like to open settings and grant permission?",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Open Settings", onPress: () => Linking.openSettings() },
+          ]
+        );
       }
+
+      setHasCameraPermission(status === "granted");
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
     }
   };
 
   const pickImage = async () => {
+    if (hasGalleryPermission === null || hasGalleryPermission === false) {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status === "denied") {
+        Alert.alert(
+          "Gallery Permission Required",
+          "This app needs access to your gallery to function properly. Would you like to open settings and grant permission?",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Open Settings", onPress: () => Linking.openSettings() },
+          ]
+        );
+      }
+      setHasGalleryPermission(status === "granted");
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -190,13 +233,6 @@ export default function HomeScreen() {
     setPromptType(option);
     handleAnalyze();
   };
-
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
 
   return (
     <SafeAreaView className="flex-1 bg-white">
