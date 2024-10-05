@@ -51,12 +51,31 @@ function RootLayoutNav() {
   }, [user]);
 
   useEffect(() => {
+    // Set up auth listener
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setIsLoading(false);
     });
 
-    return unsubscribe;
+    // Set up notification listener
+    const subscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log("Notification received:", notification);
+      }
+    );
+
+    // Check onboarding status
+    const checkOnboardingStatus = async () => {
+      const onboardingStatus = await AsyncStorage.getItem("hasSeenOnboarding");
+      setHasSeenOnboarding(onboardingStatus === "true");
+    };
+
+    checkOnboardingStatus();
+
+    return () => {
+      unsubscribe();
+      subscription.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -64,15 +83,6 @@ function RootLayoutNav() {
       incrementAppUsage();
     }
   }, [user, incrementAppUsage]);
-
-  useEffect(() => {
-    const checkOnboardingStatus = async () => {
-      const onboardingStatus = await AsyncStorage.getItem("hasSeenOnboarding");
-      setHasSeenOnboarding(onboardingStatus === "true");
-    };
-
-    checkOnboardingStatus();
-  }, []);
 
   useEffect(() => {
     if (!isLoading) {
@@ -110,16 +120,6 @@ function RootLayoutNav() {
       return () => clearTimeout(timer);
     }
   }, [user, segments, isLoading, isNotificationRegistered, hasSeenOnboarding]);
-
-  useEffect(() => {
-    const subscription = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        console.log("Notification received:", notification);
-      }
-    );
-
-    return () => subscription.remove();
-  }, []);
 
   if (isLoading) {
     return null;
