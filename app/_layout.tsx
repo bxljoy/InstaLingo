@@ -16,6 +16,7 @@ import { doc, updateDoc, increment } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useStore from "@/store/appStore";
 import { onAuthStateChanged } from "firebase/auth";
+import { initializeRevenueCat } from "@/lib/revenueCat";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -71,6 +72,9 @@ function RootLayoutNav() {
     };
 
     checkOnboardingStatus();
+
+    // Initialize RevenueCat
+    initializeRevenueCat();
 
     return () => {
       unsubscribe();
