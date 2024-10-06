@@ -27,10 +27,10 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const user = useStore((state) => state.user);
-  const isLoading = useStore((state) => state.isLoading);
-  const setUser = useStore((state) => state.setUser);
-  const setIsLoading = useStore((state) => state.setIsLoading);
+  const user = useStore.use.user();
+  const isLoading = useStore.use.isLoading();
+  const setUser = useStore.use.setUser();
+  const setIsLoading = useStore.use.setIsLoading();
   const segments = useSegments();
   const router = useRouter();
   const [isNotificationRegistered, setIsNotificationRegistered] =
