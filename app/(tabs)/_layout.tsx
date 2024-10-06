@@ -9,9 +9,8 @@ import {
   View,
   ActivityIndicator,
 } from "react-native";
-import { checkSubscriptionStatus } from "@/lib/revenueCat";
 import { presentPaywall } from "@/lib/presentPaywall";
-import useStore from "@/store/appStore";
+import useStore, { actions } from "@/store/appStore";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -32,8 +31,7 @@ function ProStatusButton() {
 
   const checkProStatus = async () => {
     setIsCheckingPro(true);
-    const status = await checkSubscriptionStatus();
-    setIsPro(status);
+    await actions.checkProStatus();
     setIsCheckingPro(false);
   };
 

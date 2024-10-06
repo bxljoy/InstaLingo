@@ -63,7 +63,7 @@ export async function registerForPushNotificationsAsync() {
         projectId: Constants.expoConfig?.extra?.eas?.projectId,
       })
     ).data;
-    console.log("Push token obtained:", token);
+    // console.log("Push token obtained:", token);
     await updatePushToken(token);
   } catch (error) {
     console.error("Error getting push token:", error);

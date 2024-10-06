@@ -22,10 +22,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { apiWrapper, geminiApiWrapper } from "@/lib/apiWrapper";
 import ReviewPrompt from "@/components/ReviewPrompt";
-import {
-  initializeRevenueCat,
-  checkSubscriptionStatus,
-} from "@/lib/revenueCat";
 import { presentPaywall } from "@/lib/presentPaywall";
 import { DailyLimitModal } from "@/components/DailyLimitModal";
 import { Alert, Linking } from "react-native";
@@ -59,15 +55,7 @@ export default function HomeScreen() {
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       setHasGalleryPermission(galleryStatus === "granted");
     })();
-    initializeRevenueCat();
-    checkAndSetProStatus();
   }, []);
-
-  const checkAndSetProStatus = async () => {
-    const status = await checkSubscriptionStatus();
-    // console.info("Pro status:", status);
-    setIsPro(status);
-  };
 
   const takePicture = async () => {
     // console.info("takePicture function called");

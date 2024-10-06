@@ -9,7 +9,12 @@ export const initializeRevenueCat = async () => {
     return;
   }
 
-  Purchases.configure({ apiKey: REVENUE_CAT_API_KEY });
+  try {
+    Purchases.configure({ apiKey: REVENUE_CAT_API_KEY });
+    console.info("RevenueCat initialized successfully");
+  } catch (error) {
+    console.error("Error initializing RevenueCat:", error);
+  }
 };
 
 export const checkSubscriptionStatus = async (): Promise<boolean> => {
