@@ -15,6 +15,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { getAllLanguages } from "@/lib/languageCodeMapping";
 import { auth } from "@/firebase/config";
 import { apiWrapper } from "@/lib/apiWrapper";
+import useStore from "@/store/appStore";
 
 export default function LearnScreen() {
   const { extractedText } = useLocalSearchParams();
@@ -28,7 +29,7 @@ export default function LearnScreen() {
   const [copiedTranslated, setCopiedTranslated] = useState(false);
   const router = useRouter();
   const scrollViewRef = useRef<ScrollView>(null);
-
+  const user = useStore((state) => state.user);
   useEffect(() => {
     (async () => {
       await initDatabase();
@@ -47,7 +48,6 @@ export default function LearnScreen() {
   const handleSaveExtractedText = async () => {
     setIsSaving(true);
     try {
-      const user = auth.currentUser;
       if (user) {
         let entityToSave: TranslatedEntity;
         if (translatedEntity) {

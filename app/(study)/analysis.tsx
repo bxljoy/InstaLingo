@@ -9,12 +9,12 @@ import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { TranslatedEntity } from "@/types/definitions";
 import { useRouter } from "expo-router";
 import { getAllLanguages } from "@/lib/languageCodeMapping";
-import { auth } from "@/firebase/config";
 import { apiWrapper } from "@/lib/apiWrapper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
+import useStore from "@/store/appStore";
 
 export default function AnalysisScreen() {
   const { analysisResult } = useLocalSearchParams();
@@ -28,6 +28,7 @@ export default function AnalysisScreen() {
   const [copiedTranslated, setCopiedTranslated] = useState(false);
   const router = useRouter();
   const scrollViewRef = useRef<ScrollView>(null);
+  const user = useStore((state) => state.user);
 
   useEffect(() => {
     (async () => {
@@ -47,7 +48,6 @@ export default function AnalysisScreen() {
   const handleSaveAnalysisResult = async () => {
     setIsSaving(true);
     try {
-      const user = auth.currentUser;
       if (user) {
         let entityToSave: TranslatedEntity;
         if (translatedEntity) {

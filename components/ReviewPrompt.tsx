@@ -11,19 +11,19 @@ import {
 import { auth, db } from "@/firebase/config";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Constants from "expo-constants";
+import useStore from "@/store/appStore";
 
 const DAYS_BETWEEN_PROMPTS = 7; // 7 days
 const USAGE_COUNT_THRESHOLD = 5; // 5 times
 
 const ReviewPrompt = () => {
   const [isVisible, setIsVisible] = useState(false);
-
+  const user = useStore((state) => state.user);
   useEffect(() => {
     checkAndShowReviewPrompt();
   }, []);
 
   const checkAndShowReviewPrompt = async () => {
-    const user = auth.currentUser;
     if (!user) return;
 
     const userDocRef = doc(db, "users", user.uid);
