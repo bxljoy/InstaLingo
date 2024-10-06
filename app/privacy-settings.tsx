@@ -6,9 +6,9 @@ import useStore from "@/store/appStore";
 
 export default function PrivacySettingsScreen() {
   const [dataCollection, setDataCollection] = useState(false);
-  const user = useStore((state) => state.user);
-  const isLoading = useStore((state) => state.isLoading);
-  const setIsLoading = useStore((state) => state.setIsLoading);
+  const user = useStore.use.user();
+  const isLoading = useStore.use.isLoading();
+  const setIsLoading = useStore.use.setIsLoading();
 
   useEffect(() => {
     loadSettings();

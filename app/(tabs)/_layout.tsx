@@ -20,8 +20,8 @@ function TabBarIcon(props: {
 }
 
 function ProStatusButton() {
-  const isPro = useStore((state) => state.isPro);
-  const setIsPro = useStore((state) => state.setIsPro);
+  const isPro = useStore.use.isPro();
+  const setIsPro = useStore.use.setIsPro();
   const [isCheckingPro, setIsCheckingPro] = useState(true);
   const colorScheme = useColorScheme();
 

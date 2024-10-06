@@ -37,8 +37,8 @@ export default function HomeScreen() {
     "extract" | "identify" | "summary"
   >("extract");
   const router = useRouter();
-  const isPro = useStore((state) => state.isPro);
-  const setIsPro = useStore((state) => state.setIsPro);
+  const isPro = useStore.use.isPro();
+  const setIsPro = useStore.use.setIsPro();
   const [isDailyLimitModalVisible, setIsDailyLimitModalVisible] =
     useState(false);
   const [limitType, setLimitType] = useState<"api" | "AI">("api");

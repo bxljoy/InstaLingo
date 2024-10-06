@@ -29,7 +29,7 @@ export default function LearnScreen() {
   const [copiedTranslated, setCopiedTranslated] = useState(false);
   const router = useRouter();
   const scrollViewRef = useRef<ScrollView>(null);
-  const user = useStore((state) => state.user);
+  const user = useStore.use.user();
   useEffect(() => {
     (async () => {
       await initDatabase();

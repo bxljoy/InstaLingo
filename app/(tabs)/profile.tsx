@@ -25,7 +25,7 @@ export default function ProfileScreen() {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const router = useRouter();
 
-  const user = useStore((state) => state.user);
+  const user = useStore.use.user();
 
   useEffect(() => {
     const checkEmailVerification = async () => {

@@ -18,7 +18,7 @@ const USAGE_COUNT_THRESHOLD = 5; // 5 times
 
 const ReviewPrompt = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const user = useStore((state) => state.user);
+  const user = useStore.use.user();
   useEffect(() => {
     checkAndShowReviewPrompt();
   }, []);
