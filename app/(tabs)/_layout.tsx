@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { presentPaywall } from "@/lib/presentPaywall";
 import useStore, { actions } from "@/store/appStore";
+import LottieView from "lottie-react-native";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -54,9 +55,15 @@ function ProStatusButton() {
 
   if (isPro) {
     return (
-      <View style={{ marginRight: 10 }}>
-        <FontAwesome name="star" size={24} color="#FFD700" />
-      </View>
+      // <View style={{ marginRight: 10 }}>
+      //   <FontAwesome name="star" size={24} color="#FFD700" />
+      // </View>
+      <LottieView
+        source={require("@/assets/animations/premium_sign.json")}
+        className="w-10 h-10"
+        autoPlay
+        loop
+      />
     );
   }
 
