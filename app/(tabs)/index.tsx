@@ -29,6 +29,7 @@ import {
 import { presentPaywall } from "@/lib/presentPaywall";
 import { DailyLimitModal } from "@/components/DailyLimitModal";
 import { Alert, Linking } from "react-native";
+import useStore from "@/store/appStore";
 
 export default function HomeScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
@@ -40,7 +41,8 @@ export default function HomeScreen() {
     "extract" | "identify" | "summary"
   >("extract");
   const router = useRouter();
-  const [isPro, setIsPro] = useState(false);
+  const isPro = useStore((state) => state.isPro);
+  const setIsPro = useStore((state) => state.setIsPro);
   const [isDailyLimitModalVisible, setIsDailyLimitModalVisible] =
     useState(false);
   const [limitType, setLimitType] = useState<"api" | "AI">("api");

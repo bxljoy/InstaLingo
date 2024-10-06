@@ -13,7 +13,7 @@ import {
   OAuthProvider,
   sendEmailVerification,
 } from "firebase/auth";
-import { auth } from "../../firebase/config";
+import { auth } from "@/firebase/config";
 import { useRouter } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import {

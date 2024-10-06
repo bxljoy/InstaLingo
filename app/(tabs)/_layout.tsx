@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { checkSubscriptionStatus } from "@/lib/revenueCat";
 import { presentPaywall } from "@/lib/presentPaywall";
+import useStore from "@/store/appStore";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -20,7 +21,8 @@ function TabBarIcon(props: {
 }
 
 function ProStatusButton() {
-  const [isPro, setIsPro] = useState(false);
+  const isPro = useStore((state) => state.isPro);
+  const setIsPro = useStore((state) => state.setIsPro);
   const [isCheckingPro, setIsCheckingPro] = useState(true);
   const colorScheme = useColorScheme();
 
