@@ -26,7 +26,7 @@ export default function HistoryScreen() {
   const [extractedTexts, setExtractedTexts] = useState<ExtractedText[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
-  const userId = useStore((state) => state.user?.uid);
+  const userId = useStore.use.user()?.uid;
 
   const loadExtractedTexts = useCallback(async () => {
     if (userId) {
