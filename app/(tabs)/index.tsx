@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  View as RNView,
-  Animated,
-} from "react-native";
-// import Animated, {
-//   useSharedValue,
-//   withTiming,
-//   useAnimatedStyle,
-//   Easing,
-// } from 'react-native-reanimated';
+import { Image, TouchableOpacity, ScrollView } from "react-native";
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  SharedValue,
+} from "react-native-reanimated";
 import { Text, View } from "@/components/Themed";
 import * as ImagePicker from "expo-image-picker";
 import { Camera } from "expo-camera";
@@ -42,8 +36,16 @@ export default function HomeScreen() {
   const [isDailyLimitModalVisible, setIsDailyLimitModalVisible] =
     useState(false);
   const [limitType, setLimitType] = useState<"api" | "AI">("api");
-  const [showAIOptions, setShowAIOptions] = useState(false);
-  const [aiOptionsHeight] = useState(new Animated.Value(0));
+
+  const mainButtonScale = useSharedValue(1);
+  const button1Opacity = useSharedValue(0);
+  const button2Opacity = useSharedValue(0);
+  const button3Opacity = useSharedValue(0);
+  const button4Opacity = useSharedValue(0);
+  const button1Position = useSharedValue({ x: 0, y: 0 });
+  const button2Position = useSharedValue({ x: 0, y: 0 });
+  const button3Position = useSharedValue({ x: 0, y: 0 });
+  const button4Position = useSharedValue({ x: 0, y: 0 });
 
   useEffect(() => {
     (async () => {
@@ -194,6 +196,8 @@ export default function HomeScreen() {
             });
           }
         }
+      } else {
+        Alert.alert("No image selected", "Please select an image to analyze");
       }
     } catch (error) {
       console.error("Error analyzing image:", error);
@@ -211,13 +215,53 @@ export default function HomeScreen() {
   };
 
   const toggleAIOptions = () => {
-    setShowAIOptions(!showAIOptions);
-    Animated.timing(aiOptionsHeight, {
-      toValue: showAIOptions ? 0 : 150, // Adjust this value based on your desired height
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
+    const isHidden = button1Opacity.value === 0;
+
+    mainButtonScale.value = withTiming(isHidden ? 0.8 : 1, { duration: 300 });
+
+    [button1Opacity, button2Opacity, button3Opacity, button4Opacity].forEach(
+      (opacity) => {
+        opacity.value = withTiming(isHidden ? 1 : 0, { duration: 300 });
+      }
+    );
+
+    if (isHidden) {
+      button1Position.value = withTiming({ x: -95, y: -65 }, { duration: 300 });
+      button2Position.value = withTiming({ x: 95, y: -65 }, { duration: 600 });
+      button3Position.value = withTiming({ x: -95, y: 65 }, { duration: 900 });
+      button4Position.value = withTiming({ x: 95, y: 65 }, { duration: 1200 });
+    } else {
+      [
+        button1Position,
+        button2Position,
+        button3Position,
+        button4Position,
+      ].forEach((position) => {
+        position.value = withTiming({ x: 0, y: 0 }, { duration: 300 });
+      });
+    }
   };
+
+  const mainButtonStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: mainButtonScale.value }],
+  }));
+
+  const createButtonStyle = (
+    opacity: SharedValue<number>,
+    position: SharedValue<{ x: number; y: number }>
+  ) =>
+    useAnimatedStyle(() => ({
+      opacity: opacity.value,
+      transform: [
+        { translateX: position.value.x },
+        { translateY: position.value.y },
+      ],
+    }));
+
+  const button1Style = createButtonStyle(button1Opacity, button1Position);
+  const button2Style = createButtonStyle(button2Opacity, button2Position);
+  const button3Style = createButtonStyle(button3Opacity, button3Position);
+  const button4Style = createButtonStyle(button4Opacity, button4Position);
 
   const handleAIOption = (option: "extract" | "identify" | "summary") => {
     setPromptType(option);
@@ -260,37 +304,54 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          onPress={toggleAIOptions}
-          className="bg-purple-500 rounded-full px-6 py-3 mt-6"
-        >
-          <Text className="text-white font-bold text-base text-center">
-            {showAIOptions ? "Hide AI Options" : "Try AI"}
-          </Text>
-        </TouchableOpacity>
-
-        <Animated.View style={{ height: aiOptionsHeight, overflow: "hidden" }}>
-          <RNView className="flex-row justify-between items-center w-full mt-4 p-1">
+        <View className="items-center justify-center h-60 bg-white">
+          <Animated.View style={[{ position: "absolute" }, button1Style]}>
             <TouchableOpacity
               onPress={() => handleAIOption("extract")}
-              className="items-center justify-center w-24 h-24 rounded-full bg-[#373737]"
+              className="items-center justify-center w-20 h-20 rounded-full bg-[#373737]"
             >
-              <Text className="text-white font-bold text-sm">Extract</Text>
+              <Text className="text-white font-bold text-xs">Extract</Text>
             </TouchableOpacity>
+          </Animated.View>
+
+          <Animated.View style={[{ position: "absolute" }, button2Style]}>
             <TouchableOpacity
               onPress={() => handleAIOption("identify")}
-              className="items-center justify-center w-24 h-24 rounded-full bg-[#858585]"
+              className="items-center justify-center w-20 h-20 rounded-full bg-[#858585]"
             >
-              <Text className="text-white font-bold text-sm">Identify</Text>
+              <Text className="text-white font-bold text-xs">Identify</Text>
             </TouchableOpacity>
+          </Animated.View>
+
+          <Animated.View style={[{ position: "absolute" }, button3Style]}>
             <TouchableOpacity
               onPress={() => handleAIOption("summary")}
-              className="items-center justify-center w-24 h-24 rounded-full bg-[#AD8E65]"
+              className="items-center justify-center w-20 h-20 rounded-full bg-[#AD8E65]"
             >
-              <Text className="text-white font-bold text-sm">Summary</Text>
+              <Text className="text-white font-bold text-xs">Summary</Text>
             </TouchableOpacity>
-          </RNView>
-        </Animated.View>
+          </Animated.View>
+
+          <Animated.View style={[{ position: "absolute" }, button4Style]}>
+            <TouchableOpacity
+              onPress={() => handleAIOption("summary")}
+              className="items-center justify-center w-20 h-20 rounded-full bg-[#0cef91]"
+            >
+              <Text className="text-white font-bold text-xs">Custom</Text>
+            </TouchableOpacity>
+          </Animated.View>
+
+          <Animated.View style={mainButtonStyle}>
+            <TouchableOpacity
+              onPress={toggleAIOptions}
+              className="bg-purple-500 rounded-full w-36 h-36 items-center justify-center"
+            >
+              <Text className="text-white font-bold text-base text-center">
+                Try AI
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
       </ScrollView>
       <ReviewPrompt />
       <DailyLimitModal
