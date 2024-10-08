@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import { Text } from "@/components/Themed";
 import {
@@ -23,11 +24,33 @@ import {
 import { GoogleAuthProvider } from "firebase/auth";
 import Constants from "expo-constants";
 import * as AppleAuthentication from "expo-apple-authentication";
+import Toast, { ErrorToast } from "react-native-toast-message";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { height } = useWindowDimensions();
+
+  const toastConfig = {
+    /*
+      Overwrite 'error' type,
+      by modifying the existing `ErrorToast` component
+    */
+    error: (props: any) => (
+      <ErrorToast
+        {...props}
+        text1Style={{
+          fontSize: 20,
+          fontWeight: "bold",
+        }}
+        text2Style={{
+          fontSize: 16,
+          color: "red",
+        }}
+      />
+    ),
+  };
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -79,10 +102,19 @@ export default function SignIn() {
       } else if (error.code === "auth/wrong-password") {
         errorMessage = "Incorrect password. Please try again.";
       } else if (error.code === "auth/invalid-email") {
-        errorMessage = "Invalid email address. Please enter a valid email.";
+        errorMessage = "Invalid email address.";
       }
 
-      Alert.alert("Sign In Error", errorMessage);
+      // Alert.alert("Sign In Error", errorMessage);
+      Toast.show({
+        type: "error",
+        text1: "Sign In Error",
+        text2: errorMessage,
+        topOffset: height * 0.5,
+        onPress: () => {
+          Toast.hide();
+        },
+      });
     }
   };
 
@@ -216,6 +248,7 @@ export default function SignIn() {
       >
         <Text className="text-blue-500">Don't have an account? Sign Up</Text>
       </TouchableOpacity>
+      <Toast config={toastConfig} />
     </View>
   );
 }

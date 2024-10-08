@@ -1,5 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Image, TouchableOpacity, ScrollView } from "react-native";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
+import { Image, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import Animated, {
   useSharedValue,
   withTiming,
@@ -20,6 +26,8 @@ import { presentPaywall } from "@/lib/presentPaywall";
 import { DailyLimitModal } from "@/components/DailyLimitModal";
 import { Alert, Linking } from "react-native";
 import useStore from "@/store/appStore";
+import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
+// import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 
 export default function HomeScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
@@ -46,6 +54,34 @@ export default function HomeScreen() {
   const button2Position = useSharedValue({ x: 0, y: 0 });
   const button3Position = useSharedValue({ x: 0, y: 0 });
   const button4Position = useSharedValue({ x: 0, y: 0 });
+
+  // // ref
+  // const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // // callbacks
+  // const handleSheetChanges = useCallback((index: number) => {
+  //   console.log("handleSheetChanges", index);
+  // }, []);
+
+  const toastConfig = {
+    /*
+      Overwrite 'error' type,
+      by modifying the existing `ErrorToast` component
+    */
+    error: (props: any) => (
+      <ErrorToast
+        {...props}
+        text1Style={{
+          fontSize: 20,
+          fontWeight: "bold",
+        }}
+        text2Style={{
+          fontSize: 16,
+          color: "red",
+        }}
+      />
+    ),
+  };
 
   useEffect(() => {
     (async () => {
@@ -197,7 +233,16 @@ export default function HomeScreen() {
           }
         }
       } else {
-        Alert.alert("No image selected", "Please select an image to analyze");
+        // Alert.alert("No image selected", "Please select an image to analyze");
+        Toast.show({
+          type: "error",
+          text1: "No image selected",
+          text2: "Please select an image to analyze",
+          position: "bottom",
+          onPress: () => {
+            Toast.hide();
+          },
+        });
       }
     } catch (error) {
       console.error("Error analyzing image:", error);
@@ -360,6 +405,26 @@ export default function HomeScreen() {
         onUpgrade={handleUpgrade}
         onClose={() => setIsDailyLimitModalVisible(false)}
       />
+      <Toast config={toastConfig} />
+      {/* <View style={styles.container}>
+        <BottomSheet ref={bottomSheetRef} onChange={handleSheetChanges}>
+          <BottomSheetView style={styles.contentContainer}>
+            <Text>Awesome 🎉</Text>
+          </BottomSheetView>
+        </BottomSheet>
+      </View> */}
     </SafeAreaView>
   );
 }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 24,
+//     backgroundColor: "grey",
+//   },
+//   contentContainer: {
+//     flex: 1,
+//     alignItems: "center",
+//   },
+// });
