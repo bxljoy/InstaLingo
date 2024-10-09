@@ -10,7 +10,12 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Pressable,
+  TextInput,
+  Keyboard,
+  TouchableWithoutFeedback,
+  Text,
+  View,
+  ActivityIndicator,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -18,7 +23,6 @@ import Animated, {
   useAnimatedStyle,
   SharedValue,
 } from "react-native-reanimated";
-import { Text, View } from "@/components/Themed";
 import * as ImagePicker from "expo-image-picker";
 import { Camera } from "expo-camera";
 import { analyzeImage } from "@/lib/visionApi";
@@ -34,6 +38,7 @@ import { Alert, Linking } from "react-native";
 import useStore from "@/store/appStore";
 import Toast, { ErrorToast } from "react-native-toast-message";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import { AITemplates } from "@/constants/AITemplates";
 
 export default function HomeScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
@@ -42,7 +47,7 @@ export default function HomeScreen() {
   const [isExtracting, setIsExtracting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [promptType, setPromptType] = useState<
-    "extract" | "identify" | "summary"
+    "extract" | "identify" | "summary" | "custom"
   >("extract");
   const router = useRouter();
   const isPro = useStore.use.isPro();
@@ -50,6 +55,7 @@ export default function HomeScreen() {
   const [isDailyLimitModalVisible, setIsDailyLimitModalVisible] =
     useState(false);
   const [limitType, setLimitType] = useState<"api" | "AI">("api");
+  const [aiInstructions, setAiInstructions] = useState("");
 
   const mainButtonScale = useSharedValue(1);
   const button1Opacity = useSharedValue(0);
@@ -65,11 +71,11 @@ export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   // callbacks
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
+  // const handleSheetChanges = useCallback((index: number) => {
+  //   console.log("handleSheetChanges", index);
+  // }, []);
 
-  const snapPoints = React.useMemo(() => ["25%", "50%", "75%", "100%"], []);
+  const snapPoints = useMemo(() => ["25%", "50%", "75%", "100%"], []);
 
   const toastConfig = {
     /*
@@ -213,7 +219,24 @@ export default function HomeScreen() {
           prompt =
             "Identify the product or objects in the image, and explain their potential use or value based on the image's content.";
         } else if (promptType === "extract") {
-          prompt = "Extract all text from this image using OCR";
+          prompt =
+            "Convert all text in this image into a digital format, maintaining the original structure and formatting. Include descriptions of any images or diagrams";
+        } else if (promptType === "custom") {
+          console.log("AI Instructions:", aiInstructions);
+          prompt = aiInstructions;
+        }
+
+        if (prompt.length === 0) {
+          Toast.show({
+            type: "error",
+            text1: "No AI instructions provided",
+            text2: "Please provide AI instructions",
+            position: "top",
+            onPress: () => {
+              Toast.hide();
+            },
+          });
+          return;
         }
 
         let analysis;
@@ -325,12 +348,29 @@ export default function HomeScreen() {
   const handleAIOption = (
     option: "extract" | "identify" | "summary" | "custom"
   ) => {
+    setPromptType(option);
     if (option === "custom") {
       expandBottomSheet();
     } else {
-      setPromptType(option);
       handleAnalyze();
     }
+  };
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
+  const closeBottomSheet = () => {
+    bottomSheetRef.current?.close();
+  };
+
+  const clearAiInstructions = () => {
+    setAiInstructions("");
+  };
+
+  const handleAnalyzeWithCustomPrompt = () => {
+    closeBottomSheet();
+    handleAnalyze();
   };
 
   return (
@@ -431,27 +471,88 @@ export default function HomeScreen() {
         ref={bottomSheetRef}
         index={-1}
         snapPoints={snapPoints}
-        onChange={handleSheetChanges}
+        // onChange={handleSheetChanges}
         enablePanDownToClose={true}
         enableHandlePanningGesture={true}
         handleStyle={{
-          backgroundColor: "violet",
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
+          backgroundColor: "#F0F0F0",
+          borderTopLeftRadius: 15,
+          borderTopRightRadius: 15,
         }}
       >
-        <BottomSheetView style={styles.contentContainer}>
-          <Text className="text-lg font-bold text-fuchsia-600">
-            Custom AI Options
-          </Text>
-          <Pressable
-            onPress={() => bottomSheetRef.current?.close()}
-            style={styles.buttonContainer}
-          >
-            <Text>Close</Text>
-          </Pressable>
-        </BottomSheetView>
+        <TouchableWithoutFeedback onPress={dismissKeyboard}>
+          <BottomSheetView style={styles.contentContainer}>
+            <Text className="text-lg font-bold mt-4 mb-2">AI Instructions</Text>
+            <View className="relative">
+              <TextInput
+                className="border border-gray-300 rounded-md p-2 mb-1 h-40 pr-10 text-lg"
+                multiline
+                numberOfLines={4}
+                placeholder="Enter instructions for AI..."
+                value={aiInstructions}
+                onChangeText={setAiInstructions}
+              />
+              {aiInstructions.length > 0 && (
+                <TouchableOpacity
+                  className="absolute top-2 right-2 p-1 bg-gray-200 rounded-full"
+                  onPress={clearAiInstructions}
+                >
+                  <MaterialIcons name="clear" size={20} color="#666" />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <Text className="text-lg font-bold mt-4 mb-2">
+              Preset Templates
+            </Text>
+            <View className="flex-row flex-wrap">
+              {AITemplates.map((option) => (
+                <TouchableOpacity
+                  key={option.id}
+                  className={`bg-gray-200 px-3 py-2 rounded-full mr-2 mb-2 ${
+                    aiInstructions === option.prompt ? "bg-purple-500" : ""
+                  }`}
+                  onPress={() => setAiInstructions(option.prompt)}
+                >
+                  <Text
+                    className={`${
+                      aiInstructions === option.prompt
+                        ? "text-white"
+                        : "text-black"
+                    }`}
+                  >
+                    {option.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity
+              className="bg-purple-500 p-4 rounded-lg items-center mt-6"
+              onPress={handleAnalyzeWithCustomPrompt}
+            >
+              <Text className="text-white font-bold">Perform AI</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="mt-6 w-full items-center"
+              onPress={closeBottomSheet}
+            >
+              <Text className="text-purple-500 font-bold">Cancel</Text>
+            </TouchableOpacity>
+          </BottomSheetView>
+        </TouchableWithoutFeedback>
       </BottomSheet>
+
+      {isAnalyzing && (
+        <View className="absolute top-1/2 left-1/3 inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <View className="bg-white p-6 rounded-lg shadow-lg">
+            <ActivityIndicator size="large" color="#8b5cf6" />
+            <Text className="mt-4 text-lg font-semibold text-center text-gray-800">
+              Analyzing...
+            </Text>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -459,11 +560,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    alignItems: "center",
-  },
-  buttonContainer: {
-    backgroundColor: "red",
-    padding: 10,
-    borderRadius: 5,
+    padding: 16,
   },
 });
