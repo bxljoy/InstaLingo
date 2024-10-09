@@ -15,13 +15,14 @@ import {
   TouchableWithoutFeedback,
   Text,
   View,
-  ActivityIndicator,
 } from "react-native";
 import Animated, {
   useSharedValue,
   withTiming,
   useAnimatedStyle,
   SharedValue,
+  withRepeat,
+  cancelAnimation,
 } from "react-native-reanimated";
 import * as ImagePicker from "expo-image-picker";
 import { Camera } from "expo-camera";
@@ -98,6 +99,14 @@ export default function HomeScreen() {
     ),
   };
 
+  const handleHeartBeat = () => {
+    mainButtonScale.value = withRepeat(
+      withTiming(1.2, { duration: 1000 }),
+      -1,
+      true
+    );
+  };
+
   useEffect(() => {
     (async () => {
       const { status: cameraStatus } =
@@ -108,6 +117,8 @@ export default function HomeScreen() {
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       setHasGalleryPermission(galleryStatus === "granted");
     })();
+
+    handleHeartBeat();
   }, []);
 
   const takePicture = async () => {
@@ -317,6 +328,10 @@ export default function HomeScreen() {
         position.value = withTiming({ x: 0, y: 0 }, { duration: 300 });
       });
     }
+
+    // if (!isHidden) {
+    //   handleHeartBeat();
+    // }
   };
 
   const mainButtonStyle = useAnimatedStyle(() => ({
@@ -414,7 +429,7 @@ export default function HomeScreen() {
           <Animated.View style={[{ position: "absolute" }, button1Style]}>
             <TouchableOpacity
               onPress={() => handleAIOption("extract")}
-              className="items-center justify-center w-20 h-20 rounded-full bg-[#373737]"
+              className="items-center justify-center w-20 h-20 rounded-full bg-[#7CF5FF]"
             >
               <Text className="text-white font-bold text-xs">Extract</Text>
             </TouchableOpacity>
@@ -423,7 +438,7 @@ export default function HomeScreen() {
           <Animated.View style={[{ position: "absolute" }, button2Style]}>
             <TouchableOpacity
               onPress={() => handleAIOption("identify")}
-              className="items-center justify-center w-20 h-20 rounded-full bg-[#858585]"
+              className="items-center justify-center w-20 h-20 rounded-full bg-[#00CCDD]"
             >
               <Text className="text-white font-bold text-xs">Identify</Text>
             </TouchableOpacity>
@@ -432,7 +447,7 @@ export default function HomeScreen() {
           <Animated.View style={[{ position: "absolute" }, button3Style]}>
             <TouchableOpacity
               onPress={() => handleAIOption("summary")}
-              className="items-center justify-center w-20 h-20 rounded-full bg-[#AD8E65]"
+              className="items-center justify-center w-20 h-20 rounded-full bg-[#4F75FF]"
             >
               <Text className="text-white font-bold text-xs">Summary</Text>
             </TouchableOpacity>
@@ -441,7 +456,7 @@ export default function HomeScreen() {
           <Animated.View style={[{ position: "absolute" }, button4Style]}>
             <TouchableOpacity
               onPress={() => handleAIOption("custom")}
-              className="items-center justify-center w-20 h-20 rounded-full bg-[#0cef91]"
+              className="items-center justify-center w-20 h-20 rounded-full bg-[#6439FF]"
             >
               <Text className="text-white font-bold text-xs">Custom</Text>
             </TouchableOpacity>
