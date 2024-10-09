@@ -13,14 +13,15 @@ import { TranslatedEntity } from "@/types/definitions";
 import { useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { getAllLanguages } from "@/lib/languageCodeMapping";
-import { auth } from "@/firebase/config";
 import { apiWrapper } from "@/lib/apiWrapper";
 import useStore from "@/store/appStore";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 export default function LearnScreen() {
   const { extractedText } = useLocalSearchParams();
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [bannerVisible, setBannerVisible] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState("en");
   const [translatedEntity, setTranslatedEntity] =
@@ -85,6 +86,7 @@ export default function LearnScreen() {
   };
 
   const handleTranslate = async () => {
+    setIsTranslating(true);
     if (extractedText) {
       try {
         const translatedEntity = await apiWrapper(() =>
@@ -97,6 +99,8 @@ export default function LearnScreen() {
         }, 100);
       } catch (error) {
         console.error("Error translating text:", error);
+      } finally {
+        setIsTranslating(false);
       }
     }
   };
@@ -287,6 +291,7 @@ export default function LearnScreen() {
           </View>
         </View>
       )}
+      {isTranslating && <LoadingIndicator message="Translating..." />}
     </View>
   );
 }
