@@ -5,7 +5,13 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import { Image, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import {
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Pressable,
+} from "react-native";
 import Animated, {
   useSharedValue,
   withTiming,
@@ -26,8 +32,8 @@ import { presentPaywall } from "@/lib/presentPaywall";
 import { DailyLimitModal } from "@/components/DailyLimitModal";
 import { Alert, Linking } from "react-native";
 import useStore from "@/store/appStore";
-import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
-// import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import Toast, { ErrorToast } from "react-native-toast-message";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 
 export default function HomeScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
@@ -55,13 +61,15 @@ export default function HomeScreen() {
   const button3Position = useSharedValue({ x: 0, y: 0 });
   const button4Position = useSharedValue({ x: 0, y: 0 });
 
-  // // ref
-  // const bottomSheetRef = useRef<BottomSheet>(null);
+  // ref
+  const bottomSheetRef = useRef<BottomSheet>(null);
 
-  // // callbacks
-  // const handleSheetChanges = useCallback((index: number) => {
-  //   console.log("handleSheetChanges", index);
-  // }, []);
+  // callbacks
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index);
+  }, []);
+
+  const snapPoints = React.useMemo(() => ["25%", "50%", "75%", "100%"], []);
 
   const toastConfig = {
     /*
@@ -308,9 +316,21 @@ export default function HomeScreen() {
   const button3Style = createButtonStyle(button3Opacity, button3Position);
   const button4Style = createButtonStyle(button4Opacity, button4Position);
 
-  const handleAIOption = (option: "extract" | "identify" | "summary") => {
-    setPromptType(option);
-    handleAnalyze();
+  // Add this new function to expand the BottomSheet
+  const expandBottomSheet = useCallback(() => {
+    bottomSheetRef.current?.expand();
+  }, []);
+
+  // Modify the handleAIOption function
+  const handleAIOption = (
+    option: "extract" | "identify" | "summary" | "custom"
+  ) => {
+    if (option === "custom") {
+      expandBottomSheet();
+    } else {
+      setPromptType(option);
+      handleAnalyze();
+    }
   };
 
   return (
@@ -379,7 +399,7 @@ export default function HomeScreen() {
 
           <Animated.View style={[{ position: "absolute" }, button4Style]}>
             <TouchableOpacity
-              onPress={() => handleAIOption("summary")}
+              onPress={() => handleAIOption("custom")}
               className="items-center justify-center w-20 h-20 rounded-full bg-[#0cef91]"
             >
               <Text className="text-white font-bold text-xs">Custom</Text>
@@ -406,25 +426,44 @@ export default function HomeScreen() {
         onClose={() => setIsDailyLimitModalVisible(false)}
       />
       <Toast config={toastConfig} />
-      {/* <View style={styles.container}>
-        <BottomSheet ref={bottomSheetRef} onChange={handleSheetChanges}>
-          <BottomSheetView style={styles.contentContainer}>
-            <Text>Awesome 🎉</Text>
-          </BottomSheetView>
-        </BottomSheet>
-      </View> */}
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        enablePanDownToClose={true}
+        enableHandlePanningGesture={true}
+        handleStyle={{
+          backgroundColor: "violet",
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+        }}
+      >
+        <BottomSheetView style={styles.contentContainer}>
+          <Text className="text-lg font-bold text-fuchsia-600">
+            Custom AI Options
+          </Text>
+          <Pressable
+            onPress={() => bottomSheetRef.current?.close()}
+            style={styles.buttonContainer}
+          >
+            <Text>Close</Text>
+          </Pressable>
+        </BottomSheetView>
+      </BottomSheet>
     </SafeAreaView>
   );
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 24,
-//     backgroundColor: "grey",
-//   },
-//   contentContainer: {
-//     flex: 1,
-//     alignItems: "center",
-//   },
-// });
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  buttonContainer: {
+    backgroundColor: "red",
+    padding: 10,
+    borderRadius: 5,
+  },
+});
