@@ -15,6 +15,7 @@ import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import useStore from "@/store/appStore";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 export default function AnalysisScreen() {
   const { analysisResult } = useLocalSearchParams();
@@ -29,6 +30,7 @@ export default function AnalysisScreen() {
   const router = useRouter();
   const scrollViewRef = useRef<ScrollView>(null);
   const user = useStore.use.user();
+  const [isTranslating, setIsTranslating] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -86,6 +88,7 @@ export default function AnalysisScreen() {
 
   const handleTranslate = async () => {
     if (analysisResult) {
+      setIsTranslating(true);
       try {
         const translatedEntity = await apiWrapper(() =>
           translateText(analysisResult as string, targetLanguage)
@@ -96,6 +99,8 @@ export default function AnalysisScreen() {
         }, 100);
       } catch (error) {
         console.error("Error translating text:", error);
+      } finally {
+        setIsTranslating(false);
       }
     }
   };
@@ -290,6 +295,7 @@ export default function AnalysisScreen() {
           </View>
         </View>
       )}
+      {isTranslating && <LoadingIndicator message="Translating..." />}
     </SafeAreaView>
   );
 }
