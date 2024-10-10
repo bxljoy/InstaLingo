@@ -55,3 +55,8 @@ jest.setup.js
 
 # jest coverage
 coverage/
+
+# build
+ios/
+ios/GoogleService-Info.plist
+android/
