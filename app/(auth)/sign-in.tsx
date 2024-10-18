@@ -141,6 +141,7 @@ export default function SignIn() {
       } else if (error.code === "PLAY_SERVICES_NOT_AVAILABLE") {
         errorMessage = "Google Play Services is not available on this device.";
       }
+      console.log(error);
       Alert.alert("Google Sign In Error", errorMessage);
     }
   };

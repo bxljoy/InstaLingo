@@ -22,7 +22,6 @@ import Animated, {
   useAnimatedStyle,
   SharedValue,
   withRepeat,
-  cancelAnimation,
 } from "react-native-reanimated";
 import * as ImagePicker from "expo-image-picker";
 import { Camera } from "expo-camera";
